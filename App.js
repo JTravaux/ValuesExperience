@@ -4,9 +4,14 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import PurposeScreen from "./screens/PurposeScreen";
+import InstructionScreen from "./screens/InstructionScreen"
+import Phase1Screen from './screens/Phase1Screen';
+import Phase2Screen from './screens/Phase2Screen';
+import Phase3Screen from './screens/Phase3Screen';
 
-import HomeScreen from './screens/HomeScreen';
-import LinksScreen from './screens/LinksScreen';
+import PlayScreen from './screens/PlayScreen';
+import DebriefScreen from './screens/DebriefScreen';
 
 const Stack = createStackNavigator();
 
@@ -15,10 +20,13 @@ export default function App(props) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    async function loadResourcesAndDataAsync() {
+    async function loadResourcesAsync() {
       try {
         SplashScreen.preventAutoHide();
-        await Font.loadAsync({...Ionicons.font,'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf')});
+        await Font.loadAsync({ ...Ionicons.font, 'lato': require('./assets/fonts/Lato-Regular.ttf') });
+        await Font.loadAsync({ ...Ionicons.font, 'lato-bold': require('./assets/fonts/Lato-Bold.ttf') });
+        await Font.loadAsync({ ...Ionicons.font, 'lato-semibold': require('./assets/fonts/Lato-Semibold.ttf') });
+        await Font.loadAsync({ ...Ionicons.font, 'lato-light': require('./assets/fonts/Lato-Light.ttf') });
       } catch (e) {
         console.warn(e);
       } finally {
@@ -27,7 +35,7 @@ export default function App(props) {
       }
     }
 
-    loadResourcesAndDataAsync();
+    loadResourcesAsync();
   }, []);
 
   if (!isLoadingComplete && !props.skipLoadingScreen)
@@ -36,8 +44,13 @@ export default function App(props) {
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Purpose" headerMode="screen">
-          <Stack.Screen name="purpose" component={HomeScreen} options={{ headerTitle: 'Purpose & Background' }} />
-          <Stack.Screen name="links" component={LinksScreen} />
+          <Stack.Screen name='purpose' component={PurposeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name='instructions' component={InstructionScreen} options={{ headerShown: false }} />
+          <Stack.Screen name='phase1' component={Phase1Screen} options={{ headerShown: false }} />
+          <Stack.Screen name='phase2' component={Phase2Screen} options={{ headerShown: false }} />
+          <Stack.Screen name='phase3' component={Phase3Screen} options={{ headerShown: false }} />
+          <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false }} />
+          <Stack.Screen name='endGame' component={DebriefScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     );
