@@ -1,9 +1,7 @@
 import * as React from 'react';
 import Modal, { ModalTitle, ModalContent, ModalFooter, ModalButton, ScaleAnimation } from 'react-native-modals';
-import { View, StyleSheet, Text, Dimensions } from 'react-native'
-import { Button } from 'react-native-elements'
+import { StyleSheet, Text, Dimensions } from 'react-native'
 import { colors, font } from '../constants/Styles';
-
 
 export default function GoalOverlay (props) {
 
@@ -20,11 +18,7 @@ export default function GoalOverlay (props) {
             onTouchOutside={props.close}
             modalTitle={<ModalTitle title="Goal" textStyle={{ fontFamily: font.semibold }} />}
             modalAnimation={new ScaleAnimation()}
-            footer={
-                <ModalFooter>
-                    <ModalButton text="Dismiss" onPress={() => props.close()} />
-                </ModalFooter>
-            }
+            footer={<ModalFooter><ModalButton text="Dismiss" onPress={() => props.close()} /></ModalFooter>}
         >
             <ModalContent>
                 {instructions.map(ins => <Text style={styles.phaseInstruction}>{ins}</Text>)}

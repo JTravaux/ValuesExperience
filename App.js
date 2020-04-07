@@ -43,7 +43,7 @@ export default function App(props) {
         <Stack.Navigator initialRouteName="Purpose" headerMode="screen">
           <Stack.Screen name='purpose' component={PurposeScreen} options={{ headerShown: false }} />
           <Stack.Screen name='instructions' component={InstructionScreen} options={{ headerShown: false }} />
-          <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false }} />
+          <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name='endGame' component={DebriefScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>

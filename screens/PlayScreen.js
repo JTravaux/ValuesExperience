@@ -17,10 +17,11 @@ const smallCardHeight = 140;
 const smallCardWidth = 100;
 const title = "Values Experience"
 
-const goals = [
+const phases = [
     {   id: 0, 
         numToKeep: 10, 
         totalCards: 22, 
+        chosenValues: [],
         instructions: [
             `There are hundreds of values. We've selected 22 common ones. We invite you now to review these on the next screen and identify the top 10 that resonate most with you by sliding them down into the "My Values" area.`,
             `[remind user can add their own values if they so desire]`,
@@ -30,16 +31,18 @@ const goals = [
     {   id: 1, 
         numToKeep: 5, 
         totalCards: 10, 
+        chosenValues: [],
         instructions: [
-            `We are now going to drill deeper into your values.  While all 10 of these values are important to you, what 5 values would be most present if you were living a life of fulfillment. `,
+            `We are now going to drill deeper into your values. While all 10 of these values are important to you, what 5 values would be most present if you were living a life of fulfillment?`,
             `Once you have filled the "My Values" area you can continue to the next phase.`
         ] 
     },
     {   id: 2, 
         numToKeep: 2, 
-        totalCards: 5, 
+        totalCards: 5,
+        chosenValues: [], 
         instructions: [
-            `Of these 5 important values what 2 values do you feel you could not live without. When you are living at your best these would be the values you would most be living. These are your Primary Values. `
+            `Of these 5 important values what 2 values do you feel you could not live without? When you are living at your best these would be the values you would most be living. These are your Primary Values. `
         ] 
     }
 ]
@@ -56,7 +59,8 @@ export default function PlayScreen({ navigation, route }) {
     const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
     const [x, setX] = React.useState(0); // For scrolling the keep pile automagically
     const [modalOpen, setModalOpen] = React.useState(false) // phase instruction model
-    const [goal, setGoal] = React.useState(goals[0]) // object containing information about the current goal ("Phase")
+    const [goal, setGoal] = React.useState(phases[0]) // object containing information about the current goal ("Phase")
+    const [goals, setGoals] = React.useState(phases) // object containing information about the different phases
 
     React.useEffect(() => { 
         if (goal.id === 0)
@@ -111,13 +115,35 @@ export default function PlayScreen({ navigation, route }) {
         setX(newX)
     }
 
-    const completePhase = () => {
-        setGoal(goals[goal.id + 1])
-        const keep = [...myValues]
-        setDeck(keep)
+    const resetRound = () => {
         setValues([])
         setTempDeck([])
         setIndex(0)
+    }
+
+    const goBack = () => {
+        if(goal.id === 0)
+            navigation.goBack()
+        else if (goal.id === 1) {
+            setGoal(goals[0])
+            setDeck(cards)
+            resetRound()
+        } else {
+            setGoal(goals[goal.id - 1])
+            setDeck(goals[goal.id - 2].chosenValues)
+            resetRound()
+        }
+    }
+
+    const completePhase = () => {
+        const keep = [...myValues]
+        const oldGoals = [...goals]
+        oldGoals.find(g => g.id === goal.id).chosenValues = keep
+        
+        setGoal(goals[goal.id + 1])
+        setGoals(oldGoals)
+        setDeck(keep)
+        resetRound()
     }
 
     const onSwipeAll = () => {
@@ -171,7 +197,7 @@ export default function PlayScreen({ navigation, route }) {
             <View style={styles.title}>
                 <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{flex: 1, alignItems: 'center', flexDirection: 'row'}}>
                     <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Icon onPress={() => navigation.goBack()} name="arrow-left" size={25} color="#FFFFFF" />
+                        <Icon onPress={goBack} name="arrow-left" size={25} color="#FFFFFF" />
                     </View>
 
                     <View style={{ flex: 6, alignItems: 'center', alignSelf: 'center'}}>
