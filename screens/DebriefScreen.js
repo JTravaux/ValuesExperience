@@ -40,6 +40,8 @@ export default function DebriefScreen({ navigation, route }) {
               comeInOnBack="fadeInUp"
               OutOnBack="fadeOutDown"
             />
+
+            <Button onPress={() => navigation.goBack()} title="Back to Values" containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
           </View>
         </LinearGradient>
 
@@ -77,19 +79,25 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    padding: 25
+    padding: 20
   },
   question: {
     marginBottom: 10,
     fontFamily: font.regular,
     color: colors.fontColor
   },
-  scroller: {
-    margin: 10
+  buttonStyle: {
+    borderRadius: 25,
+    backgroundColor: colors.mainBtnColor
   },
-  input: {
-    borderColor: '#FFF',
-    fontSize: 10
+  btnContainer: {
+    width: '80%',
+    marginBottom: 20,
+    alignSelf: 'center'
+  },
+  btnText: {
+    fontFamily: font.semibold,
+    fontSize: 20
   },
 
   // Styles for reflection question
@@ -108,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     flexDirection: 'row',
-    margin: 10
+    marginTop: 10
   },
   buttons: {
     alignItems: 'center',
