@@ -136,14 +136,18 @@ export default function PlayScreen({ navigation, route }) {
     }
 
     const completePhase = () => {
-        const keep = [...myValues]
-        const oldGoals = [...goals]
-        oldGoals.find(g => g.id === goal.id).chosenValues = keep
-        
-        setGoal(goals[goal.id + 1])
-        setGoals(oldGoals)
-        setDeck(keep)
-        resetRound()
+        if(goal.id === goals.length - 1)
+            navigation.navigate('endGame', { chosenOnes: myValues })
+        else {
+            const keep = [...myValues]
+            const oldGoals = [...goals]
+            oldGoals.find(g => g.id === goal.id).chosenValues = keep
+
+            setGoal(goals[goal.id + 1])
+            setGoals(oldGoals)
+            setDeck(keep)
+            resetRound()
+        }
     }
 
     const onSwipeAll = () => {

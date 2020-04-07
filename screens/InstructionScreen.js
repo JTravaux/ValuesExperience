@@ -30,7 +30,7 @@ export default function InstructionScreen({ navigation: { navigate } }) {
               style={{marginTop: 20}}
               data={instructions} 
               renderItem={({ item }) => <Text style={styles.instructionPoint}>{`\u2022 ${item.instruction}`}</Text>}
-              keyExtractor={item => item.id}
+              keyExtractor={item => "instruction_" + item.id}
             />
           </View>
 

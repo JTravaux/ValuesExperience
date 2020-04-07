@@ -21,7 +21,7 @@ export default function GoalOverlay (props) {
             footer={<ModalFooter><ModalButton text="Dismiss" onPress={() => props.close()} /></ModalFooter>}
         >
             <ModalContent>
-                {instructions.map(ins => <Text style={styles.phaseInstruction}>{ins}</Text>)}
+                {instructions.map((ins, idx) => <Text key={"goal_ins_" + idx} style={styles.phaseInstruction}>{ins}</Text>)}
             </ModalContent>
         </Modal>
     )
