@@ -10,13 +10,13 @@ export default function ValueCard(props) {
         <CardFlip style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
             <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
                 <Svg width={props.width} height={props.height} onLongPress={props.onLongPress} viewBox={`0 0 ${props.width} ${props.height}`} style={{ ...props.style, borderRadius: props.borderRadius ?? 15, overflow: 'hidden' }}>
-                    <Image href={props.front} width={props.width} height={props.height} />
+                    <Image href={props.card.front} width={props.width} height={props.height} />
                 </Svg>
             </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
                 <Svg width={props.width} height={props.height} onLongPress={props.onLongPress} viewBox={`0 0 ${props.width} ${props.height}`} style={{ ...props.style, borderRadius: props.borderRadius ?? 15, overflow: 'hidden' }}>
-                    <Image href={props.back} width={props.width} height={props.height} />
+                    <Image href={props.card.back} width={props.width} height={props.height} />
                 </Svg>
             </TouchableOpacity>
         </CardFlip>

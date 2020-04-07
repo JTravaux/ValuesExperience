@@ -5,16 +5,17 @@ import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const instructions = [
-  { id: 0, instruction: 'Each value is represented by a digital card.'},
+  { id: 0, instruction: 'Each value is represented by a digital card'},
   { id: 1, instruction: 'Swipe left or right through the cards ' },
   { id: 2, instruction: 'For values which resonate most with you slide them down into the area labeled "My Values"' },
   { id: 3, instruction: 'You can return cards for consideration by sliding them out of the "My Values" area' },
-  { id: 4, instruction: 'Once you’ve filled the My Values area a “Continue” button will appear to progress to the next activity' },
-  { id: 5, instruction: 'Tap a card to toggle more detailed descriptions' },
+  { id: 4, instruction: 'Tap a card to toggle more detailed descriptions' },
+  { id: 5, instruction: 'Once you’ve filled the My Values area a "Continue" button will appear to progress to the next activity' },
   { id: 6, instruction: 'Blank card...' },
 ]
 
 export default function InstructionScreen({ navigation: { navigate } }) {
+
   return (
     <View style={styles.container}>
       <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={styles.gradient}>
@@ -31,11 +32,10 @@ export default function InstructionScreen({ navigation: { navigate } }) {
               renderItem={({ item }) => <Text style={styles.instructionPoint}>{`\u2022 ${item.instruction}`}</Text>}
               keyExtractor={item => item.id}
             />
-           
           </View>
 
           <View style={styles.bottomBtns}>
-            <Button onPress={() => navigate('instructions')} title="Begin" raised activeOpacity={0.7} containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
+            <Button onPress={() => navigate('play', { id: 1, title: 'Phase One', numToChoose: 10, totalCards: 22 })} title="Begin" raised activeOpacity={0.7} containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
           </View>
 
         </View>

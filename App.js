@@ -6,9 +6,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import PurposeScreen from "./screens/PurposeScreen";
 import InstructionScreen from "./screens/InstructionScreen"
-import Phase1Screen from './screens/Phase1Screen';
-import Phase2Screen from './screens/Phase2Screen';
-import Phase3Screen from './screens/Phase3Screen';
 
 import PlayScreen from './screens/PlayScreen';
 import DebriefScreen from './screens/DebriefScreen';
@@ -46,9 +43,6 @@ export default function App(props) {
         <Stack.Navigator initialRouteName="Purpose" headerMode="screen">
           <Stack.Screen name='purpose' component={PurposeScreen} options={{ headerShown: false }} />
           <Stack.Screen name='instructions' component={InstructionScreen} options={{ headerShown: false }} />
-          <Stack.Screen name='phase1' component={Phase1Screen} options={{ headerShown: false }} />
-          <Stack.Screen name='phase2' component={Phase2Screen} options={{ headerShown: false }} />
-          <Stack.Screen name='phase3' component={Phase3Screen} options={{ headerShown: false }} />
           <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false }} />
           <Stack.Screen name='endGame' component={DebriefScreen} options={{ headerShown: false }} />
         </Stack.Navigator>

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { cards } from '../constants/Cards';
-import { colors, font } from '../constants/Styles';
 import { Button } from 'react-native-elements';
 import ValueCard from '../components/ValueCard';
+import { colors, font } from '../constants/Styles';
+import GoalOverlay from '../components/GoalOverlay';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import CardStack from 'react-native-card-stack-swiper';
@@ -16,6 +17,33 @@ const smallCardHeight = 140;
 const smallCardWidth = 100;
 const title = "Values Experience"
 
+const goals = [
+    {   id: 0, 
+        numToKeep: 10, 
+        totalCards: 22, 
+        instructions: [
+            `There are hundreds of values. We've selected 22 common ones. We invite you now to review these on the next screen and identify the top 10 that resonate most with you by sliding them down into the "My Values" area.`,
+            `[remind user can add their own values if they so desire]`,
+            `Once you have filled the "My Values" area you can continue to the next phase.`
+        ] 
+    },
+    {   id: 1, 
+        numToKeep: 5, 
+        totalCards: 10, 
+        instructions: [
+            `We are now going to drill deeper into your values.  While all 10 of these values are important to you, what 5 values would be most present if you were living a life of fulfillment. `,
+            `Once you have filled the "My Values" area you can continue to the next phase.`
+        ] 
+    },
+    {   id: 2, 
+        numToKeep: 2, 
+        totalCards: 5, 
+        instructions: [
+            `Of these 5 important values what 2 values do you feel you could not live without. When you are living at your best these would be the values you would most be living. These are your Primary Values. `
+        ] 
+    }
+]
+
 export default function PlayScreen({ navigation, route }) {
     
     const swiper = React.useRef(); // Used to swipe cards programatically
@@ -27,11 +55,14 @@ export default function PlayScreen({ navigation, route }) {
     const [tempDeck, setTempDeck] = React.useState([]); // The cards to be removed
     const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
     const [x, setX] = React.useState(0); // For scrolling the keep pile automagically
+    const [modalOpen, setModalOpen] = React.useState(false) // phase instruction model
+    const [goal, setGoal] = React.useState(goals[0]) // object containing information about the current goal ("Phase")
 
     React.useEffect(() => { 
-        if (route.params.id === 1)
+        if (goal.id === 0)
             setDeck(cards)
-    }, [navigation])
+        setModalOpen(true)
+    }, [goal])
 
     const removeFromValues = (card, idx) => {
         let toUpdate = [...myValues]
@@ -81,20 +112,12 @@ export default function PlayScreen({ navigation, route }) {
     }
 
     const completePhase = () => {
-        if (route.params.id === 1)
-            navigation.navigate('phase2')
-        else if (route.params.id === 2)
-            navigation.navigate('phase3')
-        else
-            navigation.navigate('endGame', { chosenOnes: myValues.map(keep => keep.id) })
-        
-        if(route.params.id !== 3) {
-            const keep = [...myValues]
-            setDeck(keep)
-            setValues([])
-            setTempDeck([])
-            setIndex(0)
-        }
+        setGoal(goals[goal.id + 1])
+        const keep = [...myValues]
+        setDeck(keep)
+        setValues([])
+        setTempDeck([])
+        setIndex(0)
     }
 
     const onSwipeAll = () => {
@@ -114,7 +137,7 @@ export default function PlayScreen({ navigation, route }) {
     }
 
     const addToMyValues = idx => {
-        if (myValues.length !== route.params.numToChoose) {
+        if (myValues.length !== goal.numToKeep) {
             setIndex(idx)
             setValues([...myValues, deck[idx]])
 
@@ -148,7 +171,7 @@ export default function PlayScreen({ navigation, route }) {
             <View style={styles.title}>
                 <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{flex: 1, alignItems: 'center', flexDirection: 'row'}}>
                     <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Icon name="arrow-left" size={25} color="#FFFFFF" />
+                        <Icon onPress={() => navigation.goBack()} name="arrow-left" size={25} color="#FFFFFF" />
                     </View>
 
                     <View style={{ flex: 6, alignItems: 'center', alignSelf: 'center'}}>
@@ -157,9 +180,9 @@ export default function PlayScreen({ navigation, route }) {
 
                     <View style={{ flex: 1, alignItems: 'center' }}>
                         <Button 
-                            onPress={() => myValues.length === route.params.numToChoose ? completePhase() : navigation.navigate('instructions')} 
+                            onPress={() => myValues.length === goal.numToKeep ? completePhase() : setModalOpen(true)} 
                             buttonStyle={{ backgroundColor: 'transparent' }} 
-                            icon={myValues.length === route.params.numToChoose ? <Icon name="arrow-right" size={30} color="#00FF00" /> : <Icon name="question" size={30} color="#FFFFFF" />} 
+                            icon={myValues.length === goal.numToKeep ? <Icon name="arrow-right" size={30} color="#00FF00" /> : <Icon name="question" size={30} color="#FFFFFF" />} 
                         />
                     </View>
 
@@ -182,13 +205,12 @@ export default function PlayScreen({ navigation, route }) {
                             loop={tempDeck.length === 0}
                             onSwipedBottom={addToMyValues}
                             renderNoMoreCards={() => <View />}
-                            disableBottomSwipe={myValues.length === route.params.numToChoose}
+                            disableBottomSwipe={myValues.length === goal.numToKeep}
                         >
                             {deck.map((card, idx) =>
                                 <ValueCard
                                     key={"card_" + idx}
-                                    front={card.front}
-                                    back={card.back}
+                                    card={card}
                                     width={bigCardWidth}
                                     height={bigCardHeight}
                                     borderRadius={25}
@@ -204,9 +226,9 @@ export default function PlayScreen({ navigation, route }) {
 
             <View style={styles.myValues}>
                 <View style={styles.pileTitle}>
-                    <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular }}>{myValues.length}/{route.params.numToChoose}</Text>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', color: colors.fontColor, fontFamily: font.semibold, fontSize: 17}}>My Values</Text>
-                    <Text style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular }}>{myValues.length}/{route.params.numToChoose}</Text>
+                    <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular }}>{myValues.length}/{goal.numToKeep}</Text>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', color: colors.fontColor, fontFamily: font.semibold, fontSize: 17}}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
+                    <Text style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular }}>{myValues.length}/{goal.numToKeep}</Text>
                 </View>
 
                 {/* Left Scroll Button */}
@@ -225,7 +247,7 @@ export default function PlayScreen({ navigation, route }) {
                     </View>
                    
                     {/* "My Values" Card Pile */}
-                    <View style={{ flex: 8, alignItems: route.params.id === 3 ? 'center' : 'flex-start' }}>
+                    <View style={{ flex: 8, alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
                         <ScrollView snapToAlignment="center" scrollEnabled={false} horizontal={true} style={{ margin: 2 }} ref={keepScroller} onContentSizeChange={scrollToEnd}>
                             {myValues.map((card, idx) => 
                                 <CardStack
@@ -240,8 +262,7 @@ export default function PlayScreen({ navigation, route }) {
                                         <ValueCard
                                             width={smallCardWidth}
                                             height={smallCardHeight}
-                                            front={card.front}
-                                            back={card.back}
+                                            card={card}
                                             shadowOpacity={0}
                                         />
                                     </Animatable.View>
@@ -266,6 +287,8 @@ export default function PlayScreen({ navigation, route }) {
 
                 </View>
             </View>
+
+            <GoalOverlay visible={modalOpen} instructions={goal.instructions} close={() => setModalOpen(false)} />
         </View>
     );
 }
