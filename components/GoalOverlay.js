@@ -15,6 +15,7 @@ export default function GoalOverlay (props) {
         <Modal
             width={Dimensions.get('screen').width * 0.8}
             visible={props.visible}
+            overlayOpacity={0.75}
             onTouchOutside={props.close}
             modalTitle={<ModalTitle title="Goal" textStyle={{ fontFamily: font.semibold }} />}
             modalAnimation={new ScaleAnimation()}

@@ -52,10 +52,10 @@ export default function PlayScreen({ navigation, route }) {
     const swiper = React.useRef(); // Used to swipe cards programatically
     const keepScroller = React.useRef(); // used to scroll the scrollviewer programatically
 
-    const [index, setIndex] = React.useState(0); // Index of the last card added to the keep pile
     const [myValues, setValues] = React.useState([]); // The user's value pile
     const [deck, setDeck] = React.useState([]); // The main pile of cards 
-    const [tempDeck, setTempDeck] = React.useState([]); // The cards to be removed
+    const [removeTemp, setRemoveTemp] = React.useState([]); // The cards to be removed from the main deck
+    const [addTemp, setAddTemp] = React.useState([]); // The cards to be added to the main deck
     const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
     const [x, setX] = React.useState(0); // For scrolling the keep pile automagically
     const [modalOpen, setModalOpen] = React.useState(false) // phase instruction model
@@ -68,36 +68,21 @@ export default function PlayScreen({ navigation, route }) {
         setModalOpen(true)
     }, [goal])
 
-    const removeFromValues = (card, idx) => {
-        let toUpdate = [...myValues]
-
-        // Still in the deck from before (no refresh occured yet) & its the one they just swiped
-        if ((deck.findIndex(card => card.id === toUpdate[idx].id) !== -1) && card.id === index) {
-            swiper.current.goBackFromBottom()
-
-            // Remove the card from the keep pile
-            toUpdate.splice(idx, 1)
-            setValues(toUpdate);
-            setIndex(index - 1)
-            return;
-        }
-
-        let removed = toUpdate.splice(idx, 1)
-
-        // Update the main deck if needed
-        let udpdatedDeck = [...deck]
-        if (tempDeck.length > 0) {
-            for (var i = tempDeck.length - 1; i >= 0; i--)
-                udpdatedDeck.splice(tempDeck[i], 1)
-
-            setTempDeck([])
-        }
-
-        // Add the card back to the main pile
-        udpdatedDeck.unshift(removed[0])
-        setDeck(udpdatedDeck)
-        setIndex(0)
-        setValues(toUpdate)
+    const removeFromValues = idx => {
+        let myDeck = [...myValues]
+    
+        // Remove the card from "My Values"
+        const removed = myDeck.splice(idx, 1)[0]
+        setValues(myDeck)
+        
+        // Check if the card is already in the deck
+        if (removeTemp.findIndex(c => c.id === removed.id) !== -1){
+            // Found, so just remove from the temp deck
+            let temp = [...removeTemp]
+            temp.splice(temp.findIndex(c => c.id === removed.id), 1)
+            setRemoveTemp(temp)
+        } else 
+            setAddTemp([...addTemp, removed])
     }
 
     const scrollCards = variant => {
@@ -117,8 +102,7 @@ export default function PlayScreen({ navigation, route }) {
 
     const resetRound = () => {
         setValues([])
-        setTempDeck([])
-        setIndex(0)
+        setRemoveTemp([])
     }
 
     const goBack = () => {
@@ -154,36 +138,52 @@ export default function PlayScreen({ navigation, route }) {
         // Check if there's any cards to remove
         // Lets do it now instead of when the action occurs
         // to make the whole process smoother, less jittery
-        if (tempDeck.length > 0) {
+        if (removeTemp.length > 0) {
             setLoading(true)
             let udpdatedDeck = [...deck]
-            for (var i = tempDeck.length - 1; i >= 0; i--)
-                udpdatedDeck.splice(tempDeck[i], 1)
-            setDeck(udpdatedDeck)
-            setTempDeck([])
-            setIndex(0)
+            processRemoveTemp(udpdatedDeck)
             setTimeout(() => setLoading(false), 100)
-        }
+        } 
+        if (addTemp.length > 0) {
+            setLoading(true)
+            let udpdatedDeck = [...deck]
+            processAddTemp(udpdatedDeck)
+            setTimeout(() => setLoading(false), 100)
+        } 
+    }
+
+    const processAddTemp = arr => {
+        for (let i = 0; i < addTemp.length; ++i)
+            arr.unshift(addTemp[i])
+
+        setDeck(arr)
+        setAddTemp([])
+    }
+
+    const processRemoveTemp = arr => {
+        for(let i = 0; i < removeTemp.length; ++i)
+            arr.splice(arr.findIndex(card => card.id === removeTemp[i].id), 1)
+
+        setDeck(arr)
+        setRemoveTemp([])
     }
 
     const addToMyValues = idx => {
         if (myValues.length !== goal.numToKeep) {
-            setIndex(idx)
             setValues([...myValues, deck[idx]])
 
+            // If its the last card in the deck, do the refresh
             if (idx === deck.length - 1) {
                 let arr = [...deck]
                 arr.splice(idx, 1)
 
                 // Check if there's anymore to remove
-                if (tempDeck.length > 0) {
-                    for (let i = tempDeck.length - 1; i >= 0; i--)
-                        arr.splice(tempDeck[i], 1)
-                    setDeck(arr)
-                } else
+                if (removeTemp.length > 0)
+                    processRemoveTemp(arr)
+                else
                     setDeck(arr)
             } else
-                setTempDeck([...tempDeck, idx])
+                setRemoveTemp([...removeTemp, deck[idx]])
         }
     }
 
@@ -226,13 +226,12 @@ export default function PlayScreen({ navigation, route }) {
                             ref={swiper}
                             duration={130}
                             key={deck.length}
-                            initialIndex={index}
                             secondCardZoom={0.95}
                             style={styles.content}
                             verticalThreshold={150}
                             onSwipedAll={onSwipeAll}
                             horizontalThreshold={100}
-                            loop={tempDeck.length === 0}
+                            loop={removeTemp.length === 0 && addTemp.length === 0}
                             onSwipedBottom={addToMyValues}
                             renderNoMoreCards={() => <View />}
                             disableBottomSwipe={myValues.length === goal.numToKeep}
@@ -258,7 +257,7 @@ export default function PlayScreen({ navigation, route }) {
                 <View style={styles.pileTitle}>
                     <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular }}>{myValues.length}/{goal.numToKeep}</Text>
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', color: colors.fontColor, fontFamily: font.semibold, fontSize: 17}}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
-                    <Text style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular }}>{myValues.length}/{goal.numToKeep}</Text>
+                    <Animatable.Text key={`${myValues.length}/${goal.numToKeep}`} style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular }} animation="tada">{myValues.length}/{goal.numToKeep}</Animatable.Text>
                 </View>
 
                 {/* Left Scroll Button */}
@@ -279,7 +278,7 @@ export default function PlayScreen({ navigation, route }) {
                     {/* "My Values" Card Pile */}
                     <View style={{ flex: 8, alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
                         <ScrollView snapToAlignment="center" scrollEnabled={false} horizontal={true} style={{ margin: 2 }} ref={keepScroller} onContentSizeChange={scrollToEnd}>
-                            {myValues.map((card, idx) => 
+                            {myValues.map((card, myValuesIndex) => 
                                 <CardStack
                                     key={"my_stack_" + card.id}
                                     style={{ alignItems: 'center' }}
@@ -287,7 +286,7 @@ export default function PlayScreen({ navigation, route }) {
                                     horizontalSwipe={false}
                                     verticalThreshold={50}
                                     renderNoMoreCards={() => <View style={{ width: 110 }} />}
-                                    onSwipedTop={() => removeFromValues(card, idx)}>
+                                    onSwipedTop={() => removeFromValues(myValuesIndex)}>
                                     <Animatable.View duration={300} animation='fadeInDown' easing="linear" >
                                         <ValueCard
                                             width={smallCardWidth}

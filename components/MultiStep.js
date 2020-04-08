@@ -43,6 +43,7 @@ export class MultiStep extends Component {
                 }, 500);
             }
         } else {
+            // this.setState({ action: 'wobble', animationFinished: false });
             this.finish();
         }
     };

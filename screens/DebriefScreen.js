@@ -35,14 +35,14 @@ export default function DebriefScreen({ navigation, route }) {
             <Multisetp 
               style={{ marginTop: 10 }} 
               steps={allSteps}
-              comeInOnNext="fadeInUp"
-              OutOnNext="fadeOutDown"
-              comeInOnBack="fadeInUp"
-              OutOnBack="fadeOutDown"
+              comeInOnNext="fadeInRight"
+              OutOnNext="fadeOutLeft"
+              comeInOnBack="fadeInLeft"
+              OutOnBack="fadeOutRight"
             />
-
-            <Button onPress={() => navigation.goBack()} title="Back to Values" containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
           </View>
+          <Button onPress={() => navigation.goBack()} title="Back to Values" containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
+
         </LinearGradient>
 
       </View>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     width: '80%',
-    marginBottom: 20,
+    marginTop: 20,
     alignSelf: 'center'
   },
   btnText: {
