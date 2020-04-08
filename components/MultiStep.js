@@ -21,14 +21,14 @@ export class MultiStep extends Component {
         };
     }
 
-    componentWillMount() {
-        const { comeInOnNext = defaultInOnNext } = this.props;
-        this.setState({ action: comeInOnNext });
-    }
+    // componentWillMount() {
+    //     const { comeInOnNext = defaultInOnNext } = this.props;
+    //     this.setState({ action: comeInOnNext });
+    // }
 
     componentDidMount() {
-        const { steps = 0 } = this.props;
-        this.setState({ totalSteps: steps.length - 1 });
+        const { steps = 0, comeInOnNext = defaultInOnNext } = this.props;
+        this.setState({ totalSteps: steps.length - 1, action: comeInOnNext});
     }
 
     next = () => {
@@ -40,7 +40,7 @@ export class MultiStep extends Component {
             if (animate) {
                 setTimeout(() => {
                     this.setState({ currentStep: currentStep + 1 });
-                }, 500);
+                }, 400);
             }
         } else {
             // this.setState({ action: 'wobble', animationFinished: false });
@@ -57,7 +57,7 @@ export class MultiStep extends Component {
             if (animate) {
                 setTimeout(() => {
                     this.setState({ currentStep: currentStep - 1 });
-                }, 500);
+                }, 400);
             }
         }
     };
