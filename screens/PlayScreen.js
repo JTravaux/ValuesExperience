@@ -53,7 +53,6 @@ export default function PlayScreen({ navigation, route }) {
     const swiper = React.useRef(); // Used to swipe cards programatically
     const keepScroller = React.useRef(); // used to scroll the scrollviewer programatically
 
-    const [index, setIndex] = React.useState(0); // The index we're at in the deck
     const [x, setX] = React.useState(0); // For scrolling the keep pile automagically
     const [myValues, setValues] = React.useState([]); // The user's value pile
     const [removeTemp, setRemoveTemp] = React.useState([]); // The cards to be removed from the main deck
@@ -251,7 +250,6 @@ export default function PlayScreen({ navigation, route }) {
                             secondCardZoom={0.95}
                             style={styles.content}
                             verticalThreshold={150}
-                            onSwiped={idx => setIndex(idx)}
                             onSwipedAll={onSwipeAll}
                             horizontalThreshold={75}
                             loop={removeTemp.length === 0 && addTemp.length === 0}

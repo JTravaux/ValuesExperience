@@ -17,7 +17,7 @@ export default function ValueCard(props) {
             <CardFlip style={{ ...styles.customContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity }} flipDirection="x" duration={400} ref={cardRef} {...props} >
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()} style={styles.customCard}>
                     <LinearGradient colors={['#c50ae4','#9198e5']} style={{...styles.customCard, padding: 10, justifyContent: 'space-between'}}>
-                        {props.height > 200 && (<>
+                        {props.height > 300 && (<>
                             <Input
                                 inputStyle={styles.frontText}
                                 inputContainerStyle={styles.textFieldContainer}
@@ -29,13 +29,13 @@ export default function ValueCard(props) {
                             <Text style={styles.how}>click the value to make changes.</Text>
                         </>)}
 
-                        {props.height <= 200 && <Text style={styles.frontTextSmall}>{props.card.front}</Text>}
+                        {props.height <= 300 && <Text style={styles.frontTextSmall}>{props.card.front}</Text>}
                     </LinearGradient>
                 </TouchableOpacity>
 
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()} style={styles.customCard}>
                     <LinearGradient colors={['#9198e5', '#c50ae4']} style={{ ...styles.customCard, padding: 10, justifyContent: 'center' }}>
-                        {props.height > 200 && (<>
+                        {props.height > 300 && (<>
                             <View style={{ flex: 10, justifyContent: 'center' }}>
                                 <Input
                                     blurOnSubmit={true}
@@ -54,7 +54,7 @@ export default function ValueCard(props) {
                             </View>
                         </>)}
 
-                        {props.height <= 200 && <Text style={styles.backTextSmall}>{props.card.back}</Text>}
+                        {props.height <= 300 && <Text style={styles.backTextSmall}>{props.card.back}</Text>}
                     </LinearGradient>
                 </TouchableOpacity>
             </CardFlip>
