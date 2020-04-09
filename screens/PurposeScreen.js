@@ -4,6 +4,12 @@ import { Button } from 'react-native-elements';
 import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
 
+const backgroundText = [
+    "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences. Exploring one's values requires much introspection and personal contemplation in order to identify the primary values that motive, direct and fulfill us.",
+    "Often, our actions contradict our values and this can feel uncomfortable or wrong without us knowing why. Before we can begin to adjust our actions to align with our values we first need to clearly identify what those values are. Research suggests that while we may connect with many values we can only focus on a few at a time. These are our primary values.",
+    "This exercise aims to help you identify and reflect on your primary values."
+]
+
 export default function PurposeScreen({navigation: { navigate } }) {
   return (
     <View style={styles.container}>
@@ -12,33 +18,7 @@ export default function PurposeScreen({navigation: { navigate } }) {
 
           <View style={styles.purposeContainer}>
             <Text style={{ ...styles.purpose, ...styles.titleStyle,  textAlign: 'center' }}>Background</Text>
-
-            <Text style={styles.purpose}>
-              Values are principles or standards of behaviour.
-            </Text>
-
-            <Text style={styles.purpose}>
-              In order to live our values it requires some up front work.  It requires us to go inward and be contemplative which is not always easy.  
-              It’s easy to dismiss them as not important.  In reality in order to live a whole life we need to explore and identify the primary values that drive us.
-            </Text>
-
-            <Text style={styles.purpose}>
-              We only have one set of values for ourselves.  Not work values  and family values and ...
-            </Text>
-
-            <Text style={styles.purpose}>
-              Our values need to be so clear in our mind that they don’t feel like a choice that are simply a definition of who we are in our lives.
-            </Text>
-
-            <Text style={styles.purpose}>
-              Tieing behaviours and actions to values.  When we act against our values it feels wrong/uncomfortable.  When we act in accordance with our values it feels right/good.
-            </Text>
-
-            <Text style={styles.purpose}>
-              Research shows that when we identify our primary values we really can manage 2-3 in our consciousness and not 10-15 at once.  
-              Something - we may identify with 10 values but really only a small number are primary.   
-            </Text>
-          
+            {backgroundText.map((txt, idx) => <Text style={styles.purpose} key={idx}>{txt}</Text>)}
           </View>
 
           <View style={styles.bottomBtns}>
@@ -65,10 +45,11 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   purpose: {
+    fontSize: 16,
     margin: 10,
     fontFamily: font.regular,
     color: colors.fontColor,
-    textAlign: 'center'
+    textAlign: 'left'
   },
   titleStyle: {
     fontFamily: font.semibold,

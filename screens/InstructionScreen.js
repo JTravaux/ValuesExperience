@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
   },
   instruction: {
     margin: 10,
+    fontSize: 16,
     fontFamily: font.regular,
     color: colors.fontColor,
     textAlign: 'center'

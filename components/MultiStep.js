@@ -7,6 +7,7 @@ const defaultInOnNext = "bounceInLeft";
 const defaultOutOnNext = "bounceOutRight";
 const defaultInOnBack = "bounceInRight";
 const defaultOutOnBack = "bounceOutLeft";
+const animationDuration = 250
 
 export class MultiStep extends Component {
     constructor(props) {
@@ -40,7 +41,7 @@ export class MultiStep extends Component {
             if (animate) {
                 setTimeout(() => {
                     this.setState({ currentStep: currentStep + 1 });
-                }, 400);
+                }, animationDuration);
             }
         } else {
             // this.setState({ action: 'wobble', animationFinished: false });
@@ -57,7 +58,7 @@ export class MultiStep extends Component {
             if (animate) {
                 setTimeout(() => {
                     this.setState({ currentStep: currentStep - 1 });
-                }, 400);
+                }, animationDuration);
             }
         }
     };
@@ -127,7 +128,7 @@ export class MultiStep extends Component {
                 animation={action}
                 onAnimationEnd={this.animationEnd}
                 style={{ flex: 1 }}
-                duration={400}
+                duration={animationDuration}
             >
                 <Step
                     next={this.next}

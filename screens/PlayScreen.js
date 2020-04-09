@@ -16,6 +16,8 @@ const bigCardWidth = 280;
 const smallCardHeight = 140;
 const smallCardWidth = 100;
 const title = "Values Experience"
+const defaultCustomFront = "Custom Value"
+const defaultCustomBack = "Don't see any values that resonate with you? Feel free to use this card to add a custom value."
 
 const phases = [
     {   id: 0, 
@@ -23,8 +25,7 @@ const phases = [
         totalCards: 22, 
         chosenValues: [],
         instructions: [
-            `There are hundreds of values. We've selected 22 common ones. We invite you now to review these on the next screen and identify the top 10 that resonate most with you by sliding them down into the "My Values" area.`,
-            `[remind user can add their own values if they so desire]`,
+            `There are hundreds of values. On the next screen are 22 common ones. We invite you now to review these plus any you want to add and identify 10 that resonate most with you by sliding them down into the "My Values" area.`,
             `Once you have filled the "My Values" area you can continue to the next phase.`
         ] 
     },
@@ -33,7 +34,7 @@ const phases = [
         totalCards: 10, 
         chosenValues: [],
         instructions: [
-            `We are now going to drill deeper into your values. While all 10 of these values are important to you, what 5 values would be most present if you were living a life of fulfillment?`,
+            `We are now going to drill deeper into your values. While all 10 of these values are important to you, what 5 values do you hold dear when living your life most fulfilled?`,
             `Once you have filled the "My Values" area you can continue to the next phase.`
         ] 
     },
@@ -42,7 +43,7 @@ const phases = [
         totalCards: 5,
         chosenValues: [], 
         instructions: [
-            `Of these 5 important values what 2 values do you feel you could not live without? When you are living at your best these would be the values you would most be living. These are your Primary Values. `
+            `Of these 5 important values what 2 values do you feel you absolutely could not live without? When you are living at your best these would be the values that affect your decision making and actions the most. These are your Primary Values.`
         ] 
     }
 ]
@@ -52,32 +53,52 @@ export default function PlayScreen({ navigation, route }) {
     const swiper = React.useRef(); // Used to swipe cards programatically
     const keepScroller = React.useRef(); // used to scroll the scrollviewer programatically
 
-    const [myValues, setValues] = React.useState([]); // The user's value pile
-    const [deck, setDeck] = React.useState([]); // The main pile of cards 
-    const [removeTemp, setRemoveTemp] = React.useState([]); // The cards to be removed from the main deck
-    const [addTemp, setAddTemp] = React.useState([]); // The cards to be added to the main deck
-    const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
+    const [index, setIndex] = React.useState(0); // The index we're at in the deck
     const [x, setX] = React.useState(0); // For scrolling the keep pile automagically
+    const [myValues, setValues] = React.useState([]); // The user's value pile
+    const [removeTemp, setRemoveTemp] = React.useState([]); // The cards to be removed from the main deck
+    const [deck, setDeck] = React.useState([]); // The main pile of cards 
+    const [addTemp, setAddTemp] = React.useState([]); // The cards to be added to the main deck
+    const [customValues, setCustomValues] = React.useState([]); // The custom values a user has added
+
+    const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
     const [modalOpen, setModalOpen] = React.useState(false) // phase instruction model
     const [goal, setGoal] = React.useState(phases[0]) // object containing information about the current goal ("Phase")
     const [goals, setGoals] = React.useState(phases) // object containing information about the different phases
 
     React.useEffect(() => { 
         if (goal.id === 0)
-            setDeck(cards)
+            setDeck([newCustomValue(), ...cards])
         setModalOpen(true)
     }, [goal])
 
+    const editCustom = (id, side, text) => {
+        let newDeck = [...deck]
+        let card = newDeck.find(c => c.id === id)
+        
+        if(side === 'front')
+            card.front = text
+        else if (side === 'back')
+            card.back = text
+
+        setDeck(newDeck)
+    }
+
+    const newCustomValue = () => {
+        let newValue = { id: customValues.length + 1000, custom: true, front: defaultCustomFront, back: defaultCustomBack }
+        setCustomValues([...customValues, newValue])
+        return newValue
+    }
+
     const removeFromValues = idx => {
         let myDeck = [...myValues]
-    
+       
         // Remove the card from "My Values"
         const removed = myDeck.splice(idx, 1)[0]
         setValues(myDeck)
-        
+
         // Check if the card is already in the deck
         if (removeTemp.findIndex(c => c.id === removed.id) !== -1){
-            // Found, so just remove from the temp deck
             let temp = [...removeTemp]
             temp.splice(temp.findIndex(c => c.id === removed.id), 1)
             setRemoveTemp(temp)
@@ -200,6 +221,7 @@ export default function PlayScreen({ navigation, route }) {
         <View style={styles.container}>
             <View style={styles.title}>
                 <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{flex: 1, alignItems: 'center', flexDirection: 'row'}}>
+                    
                     <View style={{ flex: 1, alignItems: 'center' }}>
                         <Icon onPress={goBack} name="arrow-left" size={25} color="#FFFFFF" />
                     </View>
@@ -229,8 +251,9 @@ export default function PlayScreen({ navigation, route }) {
                             secondCardZoom={0.95}
                             style={styles.content}
                             verticalThreshold={150}
+                            onSwiped={idx => setIndex(idx)}
                             onSwipedAll={onSwipeAll}
-                            horizontalThreshold={100}
+                            horizontalThreshold={75}
                             loop={removeTemp.length === 0 && addTemp.length === 0}
                             onSwipedBottom={addToMyValues}
                             renderNoMoreCards={() => <View />}
@@ -244,6 +267,7 @@ export default function PlayScreen({ navigation, route }) {
                                     height={bigCardHeight}
                                     borderRadius={25}
                                     shadowOpacity={0.85}
+                                    edit={editCustom}
                                 />
                             )}
                         </CardStack>
