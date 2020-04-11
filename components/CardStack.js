@@ -99,7 +99,6 @@ class CardStack extends Component {
         }
       },
     });
-    console.log(this._panResponder)
   }
 
   componentDidUpdate(prevProps) {
