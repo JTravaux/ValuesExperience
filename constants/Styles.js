@@ -8,5 +8,6 @@ export const font = {
   regular: 'lato',
   bold: 'lato-bold',
   semibold: 'lato-semibold',
-  light: 'lato-light'
+  light: 'lato-light',
+  card: 'harring'
 }

@@ -2,14 +2,14 @@
   "expo": {
     "name": "Values Experience",
     "slug": "ValuesExperience",
-    "description": "Welcome to the Values Experience! This is the very first alpha version available to testers. Expect some bugs, please document and report any you encounter.\nVersion: 0.0.1",
+    "description": "Welcome to the Values Experience! This is the very first alpha version available to testers. Expect some bugs, please document and report any you encounter.\nVersion: 0.0.2",
     "privacy": "unlisted",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "0.0.1",
+    "version": "0.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",

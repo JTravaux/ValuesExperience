@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import PurposeScreen from "./screens/PurposeScreen";
 import InstructionScreen from "./screens/InstructionScreen"
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import PlayScreen from './screens/PlayScreen';
 import DebriefScreen from './screens/DebriefScreen';
@@ -24,6 +25,8 @@ export default function App(props) {
         await Font.loadAsync({ ...Ionicons.font, 'lato-bold': require('./assets/fonts/Lato-Bold.ttf') });
         await Font.loadAsync({ ...Ionicons.font, 'lato-semibold': require('./assets/fonts/Lato-Semibold.ttf') });
         await Font.loadAsync({ ...Ionicons.font, 'lato-light': require('./assets/fonts/Lato-Light.ttf') });
+        await Font.loadAsync({ ...Ionicons.font, 'harring': require('./assets/fonts/harring.ttf') });
+
       } catch (e) {
         console.warn(e);
       } finally {
@@ -39,13 +42,15 @@ export default function App(props) {
     return null;
   else 
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Purpose" headerMode="screen">
-          <Stack.Screen name='purpose' component={PurposeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name='instructions' component={InstructionScreen} options={{ headerShown: false }} />
-          <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false, gestureEnabled: false }} />
-          <Stack.Screen name='endGame' component={DebriefScreen} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Purpose" headerMode="screen">
+            <Stack.Screen name='purpose' component={PurposeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='instructions' component={InstructionScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false, gestureEnabled: false }} />
+            <Stack.Screen name='endGame' component={DebriefScreen} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
     );
 }

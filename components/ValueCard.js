@@ -9,31 +9,68 @@ import { Input } from 'react-native-elements';
 export default function ValueCard(props) {
     const cardRef = React.useRef();
 
-    const [customFront, setCustomFront] = React.useState(props.card.custom ? props.card.front : '')
-    const [customBack, setCustomBack] = React.useState(props.card.custom ? props.card.back : '')
+    const [customFront, setCustomFront] = React.useState('')
+    const [customBack, setCustomBack] = React.useState('')
+    const [color, setColor] = React.useState(colors.fontColor)
+
+    const resetColor = () => {
+        if (color !== colors.fontColor)
+            setTimeout(() => { setColor(colors.fontColor) }, 100)
+    }
+
+    const flipToBack = () => {
+        if(customFront.length > 0)
+            props.edit(props.card.id, 'front', customFront)
+
+        cardRef.current.flip()
+        Keyboard.dismiss()
+    }
+
+    const flipToFront = () => {
+        if (customBack.length > 0)
+            props.edit(props.card.id, 'back', customBack)
+
+        cardRef.current.flip()
+        Keyboard.dismiss()
+    }
+
+    const changeFront = text => {
+        if (text.length <= FRONT_MAX)
+            setCustomFront(text)
+    }
 
     if (props.card.custom) 
         return (
-            <CardFlip style={{ ...styles.customContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity }} flipDirection="x" duration={400} ref={cardRef} {...props} >
-                <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()} style={styles.customCard}>
+            <CardFlip onFlip={resetColor} style={{ ...styles.customContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity }} flipDirection="x" duration={400} ref={cardRef} {...props} >
+                <TouchableOpacity activeOpacity={1} onPress={flipToBack} style={styles.customCard}>
                     <LinearGradient colors={['#c50ae4','#9198e5']} style={{...styles.customCard, padding: 10, justifyContent: 'space-between'}}>
                         {props.height > 300 && (<>
                             <Input
+                                multiline
+                                blurOnSubmit={true}
                                 inputStyle={styles.frontText}
                                 inputContainerStyle={styles.textFieldContainer}
+                                placeholderTextColor={color}
                                 value={customFront}
-                                onChangeText={txt => setCustomFront(txt)}
+                                placeholder="Custom Value"
+                                onFocus={() => setColor("rgba(255,255,255,0.1)")}
+                                onBlur={() => setColor(colors.fontColor)}
+                                onChangeText={text => setCustomFront(text)}
                                 onSubmitEditing={() => props.edit(props.card.id, 'front', customFront)}
                                 returnKeyType="done"
                             />
-                            <Text style={styles.how}>click the value to make changes.</Text>
+                            <Text style={styles.how}>Tap the title to customize</Text>
                         </>)}
 
-                        {props.height <= 300 && <Text style={styles.frontTextSmall}>{props.card.front}</Text>}
+                        {props.height <= 300 && <Text style={{
+                            ...styles.frontTextSmall, 
+                            fontSize: props.card.front.length > 7 ? 12 : 20,
+                            lineHeight: props.card.front.length > 7 ? 15 : 30,
+                        }}>{props.card.front}</Text>}
                     </LinearGradient>
                 </TouchableOpacity>
 
-                <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()} style={styles.customCard}>
+                <TouchableOpacity activeOpacity={1} onPress={flipToFront} style={styles.customCard}>
                     <LinearGradient colors={['#9198e5', '#c50ae4']} style={{ ...styles.customCard, padding: 10, justifyContent: 'center' }}>
                         {props.height > 300 && (<>
                             <View style={{ flex: 10, justifyContent: 'center' }}>
@@ -41,8 +78,12 @@ export default function ValueCard(props) {
                                     blurOnSubmit={true}
                                     multiline
                                     inputStyle={styles.backText}
-                                    inputContainerStyle={{ borderBottomWidth: 0 }}
+                                    inputContainerStyle={{ borderBottomWidth: 0 }} 
+                                    placeholderTextColor={color}
+                                    placeholder="Don't see any values that resonate with you? Feel free to use this card to add a custom value."
                                     value={customBack}
+                                    onFocus={() => setColor("rgba(255,255,255,0.1)")}
+                                    onBlur={() => setColor(colors.fontColor)}
                                     onChangeText={txt => setCustomBack(txt)}
                                     onSubmitEditing={() => props.edit(props.card.id, 'back', customBack)}
                                     returnKeyType="done"
@@ -50,7 +91,7 @@ export default function ValueCard(props) {
                             </View>
 
                             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                                <Text style={styles.how}>click the description to make changes.</Text>
+                                <Text style={styles.how}>Tap the description to customize</Text>
                             </View>
                         </>)}
 
@@ -98,17 +139,18 @@ const styles = StyleSheet.create({
         borderRadius: 15
     },
     frontText: {
-        fontSize: 35,
+        fontSize: 38,
+        lineHeight: 30,
         textAlign: 'center',
         color: colors.fontColor,
-        fontFamily: font.semibold
+        fontFamily: font.card
     },
     backText: {
-        fontSize: 20,
+        fontSize: 23,
+        lineHeight: 20,
         textAlign: 'center',
-        textAlignVertical: 'center',
         color: colors.fontColor,
-        fontFamily: font.regular
+        fontFamily: font.card
     },
     how: {
         fontFamily: font.light,
@@ -117,19 +159,18 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     textFieldContainer: {
-        borderBottomWidth: 0,
-        backgroundColor: '#b300d1'
+        borderBottomWidth: 0
     },
     frontTextSmall: {
-        fontSize: 15,
         textAlign: 'center',
         color: colors.fontColor,
-        fontFamily: font.semibold  
+        fontFamily: font.card  
     },
     backTextSmall: {
-        fontSize: 10,
+        fontSize: 13,
+        lineHeight: 20,
         textAlign: 'center',
         color: colors.fontColor,
-        fontFamily: font.semibold
+        fontFamily: font.card
     }
 });

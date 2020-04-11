@@ -6,18 +6,17 @@ import { colors, font } from '../constants/Styles';
 import GoalOverlay from '../components/GoalOverlay';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
-import CardStack from 'react-native-card-stack-swiper';
+import CardStack from '../components/CardStack';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { ScrollView } from 'react-native-gesture-handler';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View, ActivityIndicator, Dimensions } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const bigCardHeight = 400;
 const bigCardWidth = 280;
 const smallCardHeight = 140;
 const smallCardWidth = 100;
 const title = "Values Experience"
-const defaultCustomFront = "Custom Value"
-const defaultCustomBack = "Don't see any values that resonate with you? Feel free to use this card to add a custom value."
 
 const phases = [
     {   id: 0, 
@@ -50,24 +49,24 @@ const phases = [
 
 export default function PlayScreen({ navigation, route }) {
     
-    const swiper = React.useRef(); // Used to swipe cards programatically
+    const insets = useSafeArea();
     const keepScroller = React.useRef(); // used to scroll the scrollviewer programatically
 
-    const [x, setX] = React.useState(0); // For scrolling the keep pile automagically
     const [myValues, setValues] = React.useState([]); // The user's value pile
     const [removeTemp, setRemoveTemp] = React.useState([]); // The cards to be removed from the main deck
     const [deck, setDeck] = React.useState([]); // The main pile of cards 
     const [addTemp, setAddTemp] = React.useState([]); // The cards to be added to the main deck
-    const [customValues, setCustomValues] = React.useState([]); // The custom values a user has added
-
     const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
     const [modalOpen, setModalOpen] = React.useState(false) // phase instruction model
     const [goal, setGoal] = React.useState(phases[0]) // object containing information about the current goal ("Phase")
     const [goals, setGoals] = React.useState(phases) // object containing information about the different phases
+    const [scrollEnabled, setScrollEnabled] = React.useState(true); // For scrolling the keep pile automagically
+    const newCustomValue = () => { return { id: Date.now(), custom: true, front: '', back: '', name: "Custom Value" } }
 
     React.useEffect(() => { 
         if (goal.id === 0)
-            setDeck([newCustomValue(), ...cards])
+            setDeck([...cards, newCustomValue()])
+
         setModalOpen(true)
     }, [goal])
 
@@ -83,46 +82,10 @@ export default function PlayScreen({ navigation, route }) {
         setDeck(newDeck)
     }
 
-    const newCustomValue = () => {
-        let newValue = { id: customValues.length + 1000, custom: true, front: defaultCustomFront, back: defaultCustomBack }
-        setCustomValues([...customValues, newValue])
-        return newValue
-    }
-
-    const removeFromValues = idx => {
-        let myDeck = [...myValues]
-       
-        // Remove the card from "My Values"
-        const removed = myDeck.splice(idx, 1)[0]
-        setValues(myDeck)
-
-        // Check if the card is already in the deck
-        if (removeTemp.findIndex(c => c.id === removed.id) !== -1){
-            let temp = [...removeTemp]
-            temp.splice(temp.findIndex(c => c.id === removed.id), 1)
-            setRemoveTemp(temp)
-        } else 
-            setAddTemp([...addTemp, removed])
-    }
-
-    const scrollCards = variant => {
-        let newX; 
-
-        if(variant === 'right')
-            newX = x + smallCardWidth
-        else
-            newX = x - smallCardWidth
-
-        if ((newX > myValues.length * smallCardWidth) || newX < 0)
-            newX = 0
-
-        keepScroller.current.scrollTo({ x: newX, y: 0, animated: true })
-        setX(newX)
-    }
-
     const resetRound = () => {
         setValues([])
         setRemoveTemp([])
+        setAddTemp([])
     }
 
     const goBack = () => {
@@ -175,51 +138,73 @@ export default function PlayScreen({ navigation, route }) {
     const processAddTemp = arr => {
         for (let i = 0; i < addTemp.length; ++i)
             arr.unshift(addTemp[i])
-
         setDeck(arr)
         setAddTemp([])
     }
 
     const processRemoveTemp = arr => {
         for(let i = 0; i < removeTemp.length; ++i)
-            arr.splice(arr.findIndex(card => card.id === removeTemp[i].id), 1)
+            if (removeTemp[i].custom)
+                arr.splice(arr.findIndex(card => card.id === removeTemp[i].id), 1, newCustomValue())
+            else
+                arr.splice(arr.findIndex(card => card.id === removeTemp[i].id), 1)
 
         setDeck(arr)
         setRemoveTemp([])
     }
 
     const addToMyValues = idx => {
+        const card = deck[idx];
+        console.log("Card Added:", card)
+
         if (myValues.length !== goal.numToKeep) {
-            setValues([...myValues, deck[idx]])
-
-            // If its the last card in the deck, do the refresh
-            if (idx === deck.length - 1) {
-                let arr = [...deck]
-                arr.splice(idx, 1)
-
-                // Check if there's anymore to remove
-                if (removeTemp.length > 0)
-                    processRemoveTemp(arr)
-                else
+            if (card?.custom) {
+                if (card.front.length > 0) {
+                    setValues([...myValues, card])
+                    let arr = [...deck]
+                    arr.splice(arr.findIndex(c => c.id === card.id), 1, newCustomValue())
                     setDeck(arr)
-            } else
-                setRemoveTemp([...removeTemp, deck[idx]])
+                }
+            } else {
+                // Add the non custom card to "My Values"
+                setValues([...myValues, card])
+
+                // If its the last card in the deck, do the refresh
+                if (idx === deck.length - 1) {
+                    let arr = [...deck]
+                    arr.splice(idx, 1)
+
+                    // Check if there's anymore to remove
+                    if (removeTemp.length > 0)
+                        processRemoveTemp(arr)
+                    else
+                        setDeck(arr)
+                } else
+                    setRemoveTemp([...removeTemp, card])
+            }
         }
     }
 
-    const scrollToEnd = () => {
-        keepScroller.current.scrollToEnd({ animated: true })
+    const removeFromValues = id => {
+        let myDeck = [...myValues]
 
-        if (myValues.length === 1)
-            setX(1)
-        else if (x === 0)
-            setX(1)
+        // Remove the card from "My Values"
+        const removed = myDeck.splice(myDeck.findIndex(card => card.id === id), 1)[0]
+        setValues(myDeck)
+
+        // Check if the card is already in the deck
+        if (removeTemp.findIndex(c => c.id === removed.id) !== -1) {
+            let temp = [...removeTemp]
+            temp.splice(temp.findIndex(c => c.id === removed.id), 1)
+            setRemoveTemp(temp)
+        } else
+            setAddTemp([...addTemp, removed])
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.title}>
-                <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{flex: 1, alignItems: 'center', flexDirection: 'row'}}>
+                <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{ flex: 1, alignItems: 'center', flexDirection: 'row', paddingTop: insets.top + 5, paddingRight: 15, paddingLeft: 15, paddingBottom: insets.top + 5}}>
                     
                     <View style={{ flex: 1, alignItems: 'center' }}>
                         <Icon onPress={goBack} name="arrow-left" size={25} color="#FFFFFF" />
@@ -242,24 +227,23 @@ export default function PlayScreen({ navigation, route }) {
 
             <View style={styles.mainPile}>
                 {!loading && deck && (
-                    <Animatable.View animation="bounceInDown" duration={1000} style={styles.content} key="mainPileDeck">
+                    <Animatable.View collapsable={true} animation="bounceInDown" duration={1000} style={styles.content} key="mainPileDeck">
                         <CardStack
-                            ref={swiper}
                             duration={130}
                             key={deck.length}
                             secondCardZoom={0.95}
                             style={styles.content}
-                            verticalThreshold={150}
+                            verticalThreshold={Dimensions.get('screen').width / 4}
                             onSwipedAll={onSwipeAll}
-                            horizontalThreshold={75}
+                            horizontalThreshold={Dimensions.get('screen').width / 2}
                             loop={removeTemp.length === 0 && addTemp.length === 0}
                             onSwipedBottom={addToMyValues}
                             renderNoMoreCards={() => <View />}
                             disableBottomSwipe={myValues.length === goal.numToKeep}
                         >
-                            {deck.map((card, idx) =>
+                            {deck.map(card =>
                                 <ValueCard
-                                    key={"card_" + idx}
+                                    key={"card_" + card.id}
                                     card={card}
                                     width={bigCardWidth}
                                     height={bigCardHeight}
@@ -282,60 +266,40 @@ export default function PlayScreen({ navigation, route }) {
                     <Animatable.Text key={`${myValues.length}/${goal.numToKeep}`} style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular }} animation="tada">{myValues.length}/{goal.numToKeep}</Animatable.Text>
                 </View>
 
-                {/* Left Scroll Button */}
-                <View style={{ flexDirection: 'row', flex: 1 }}>
-                    <View style={styles.scrollBtnContainer}>
-                        {myValues.length > 3 && 
-                            <Animatable.View animation="tada" duration={1250}>
-                                <Button 
-                                    disabled={myValues.length < 3 || x <= 0} 
-                                    onPress={() => scrollCards('left')} 
-                                    buttonStyle={{ backgroundColor: '#FFFFFF' }} 
-                                    icon={<Icon name="caret-left" size={15} color="#0883BF" />} 
-                                />
-                            </Animatable.View>
-                        }
-                    </View>
-                   
-                    {/* "My Values" Card Pile */}
-                    <View style={{ flex: 8, alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
-                        <ScrollView snapToAlignment="center" scrollEnabled={false} horizontal={true} style={{ margin: 2 }} ref={keepScroller} onContentSizeChange={scrollToEnd}>
-                            {myValues.map((card, myValuesIndex) => 
-                                <CardStack
-                                    key={"my_stack_" + card.id}
-                                    style={{ alignItems: 'center' }}
-                                    disableBottomSwipe={true}
-                                    horizontalSwipe={false}
-                                    verticalThreshold={50}
-                                    renderNoMoreCards={() => <View style={{ width: 110 }} />}
-                                    onSwipedTop={() => removeFromValues(myValuesIndex)}>
-                                    <Animatable.View duration={300} animation='fadeInDown' easing="linear" >
-                                        <ValueCard
-                                            width={smallCardWidth}
-                                            height={smallCardHeight}
-                                            card={card}
-                                            shadowOpacity={0}
-                                        />
-                                    </Animatable.View>
-                                </CardStack>
-                            )}
-                        </ScrollView>
-                    </View>
-
-                    {/* Right Scroll Button */}
-                    <View style={styles.scrollBtnContainer}>
-                        {myValues.length > 3 && 
-                            <Animatable.View animation="tada" duration={1250}>
-                                <Button 
-                                    disabled={(x >= myValues.length * 60)  || myValues.length < 3} 
-                                    onPress={() => scrollCards('right')} 
-                                    buttonStyle={{ backgroundColor: '#FFFFFF' }} 
-                                    icon={<Icon name="caret-right" size={15} color="#0883BF" />} 
-                                />
-                            </Animatable.View>
-                        }
-                    </View>
-
+                {/* "My Values" Card Pile */}
+                <View style={{flex: 1,alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
+                    <FlatList
+                        removeClippedSubviews
+                        data={myValues}
+                        horizontal
+                        scrollEnabled={myValues.length > 3 && scrollEnabled}
+                        onContentSizeChange={() => keepScroller.current.scrollToEnd({animated: true})}
+                        ref={keepScroller}
+                        keyExtractor={item => "my_stack_" + item.id}
+                        renderItem={({item}) => (
+                            <CardStack
+                                style={{ alignItems: 'center' }}
+                                disableBottomSwipe={true}
+                                disableLeftSwipe={true}
+                                disableRightSwipe={true}
+                                horizontalSwipe={false}
+                                verticalThreshold={50}
+                                onSwipe={() =>  setScrollEnabled(false)}
+                                onSwipeEnd={() => setScrollEnabled(true)}
+                                renderNoMoreCards={() => <View style={{ width: 110 }} />}
+                                onSwipedTop={() => removeFromValues(item.id)}>
+                                <Animatable.View duration={300} animation='fadeInDown' easing="linear" >
+                                    <ValueCard
+                                        width={smallCardWidth}
+                                        height={smallCardHeight}
+                                        card={item}
+                                        shadowOpacity={0}
+                                    />
+                                </Animatable.View>
+                            </CardStack>
+                        )}
+                    >
+                    </FlatList>
                 </View>
             </View>
 

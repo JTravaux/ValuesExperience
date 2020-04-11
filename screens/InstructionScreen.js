@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { Button } from 'react-native-elements';
 import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const instructions = [
   { id: 0, instruction: 'Each value is represented by a digital card'},
@@ -15,10 +16,11 @@ const instructions = [
 ]
 
 export default function InstructionScreen({ navigation: { navigate } }) {
+  const insets = useSafeArea();
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={styles.gradient}>
+      <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={{ ...styles.gradient, paddingTop: insets.top + 5, paddingRight: 15, paddingLeft: 15, paddingBottom: insets.top + 5}}>
         <View style={styles.contentStart}>
 
           <View style={styles.purposeContainer}>

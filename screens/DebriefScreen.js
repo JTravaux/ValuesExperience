@@ -6,6 +6,7 @@ import { colors, font } from '../constants/Styles';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Multisetp from '../components/MultiStep'
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const allSteps = [
   { name: "Question 1", component: props => <ReflectionQuestion question="Do these reflect me at at my best?" {...props} /> },
@@ -17,12 +18,13 @@ const allSteps = [
   
 ];
 export default function DebriefScreen({ navigation, route }) {
+  const insets = useSafeArea();
 
   return (
     <KeyboardAvoidingView style={{flex: 1}} behavior='padding'>
       <View style={styles.container}>
         
-        <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={styles.gradient}>
+        <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={{ ...styles.gradient, paddingTop: insets.top + 5, paddingRight: 15, paddingLeft: 15, paddingBottom: insets.top + 5}}>
           <View style={styles.contentStart}>
             <View style={{ marginTop: 10 }}>
               <Text style={styles.titleStyle}>Reflection</Text>
@@ -55,9 +57,10 @@ const ReflectionQuestion = props =>
 <View style={styles.reflectionCard}>
   <Text style={styles.reflectionQ}>{props.question}</Text>
   <View style={styles.bottomButtons}>
-      <Button buttonStyle={styles.buttons} onPress={() => props.back()} icon={<Icon name="arrow-circle-left" size={50} color="#FFFFFF" />} ></Button>
+      <Button buttonStyle={styles.buttons} onPress={() => props.back()} icon={props.currentStep !== 0 ? <Icon name="arrow-circle-left" size={50} color="#FFFFFF" /> : null} />
       <Text style={styles.stepText}>{props.currentStep + 1}/{props.totalSteps + 1}</Text>
-      <Button buttonStyle={styles.buttons} onPress={() => props.next()} icon={<Icon name="arrow-circle-right" size={50} color="#FFFFFF" />} ></Button>
+      <Button buttonStyle={styles.buttons} onPress={() => props.next()} icon={props.currentStep !== props.totalSteps ? <Icon name="arrow-circle-right" size={50} color="#FFFFFF" /> : null} />
+     
   </View>
 </View>
 
@@ -107,9 +110,10 @@ const styles = StyleSheet.create({
   },
   reflectionQ: {
     fontFamily: font.regular,
-    fontSize: 17,
+    fontSize: 30,
     textAlign: 'center',
-    color: colors.fontColor
+    color: colors.fontColor,
+    marginTop: 30
   },
   bottomButtons: {
     flex: 1,

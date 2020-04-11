@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button } from 'react-native-elements';
 import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 const backgroundText = [
     "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences. Exploring one's values requires much introspection and personal contemplation in order to identify the primary values that motive, direct and fulfill us.",
@@ -11,9 +12,11 @@ const backgroundText = [
 ]
 
 export default function PurposeScreen({navigation: { navigate } }) {
+  const insets = useSafeArea();
+
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={styles.gradient}>
+      <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={{...styles.gradient, paddingTop: insets.top + 5, paddingRight: 15, paddingLeft: 15, paddingBottom: insets.top + 5}}>
         <View style={styles.contentStart}>
 
           <View style={styles.purposeContainer}>
@@ -23,6 +26,7 @@ export default function PurposeScreen({navigation: { navigate } }) {
 
           <View style={styles.bottomBtns}>
             <Button onPress={() => navigate('instructions')} title="Next" raised activeOpacity={0.7} containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
+            <Text style={{ textAlign: 'center', color: '#CACACA'}}>Alpha: 0.0.2</Text>
           </View>
 
         </View>
@@ -41,7 +45,6 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1, 
-    padding: 20, 
     alignItems: 'center'
   },
   purpose: {
