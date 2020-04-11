@@ -26,8 +26,8 @@ class CardStack extends Component {
     };
     this.distance = this.constructor.distance;
     this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => { return false},
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => { return false },
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (evt, gestureState) => false,
       onPanResponderTerminationRequest: (evt, gestureState) => { return true },
       onPanResponderTerminate: (evt, gestureState) => { },
       onShouldBlockNativeResponder: (evt, gestureState) => { return false },
@@ -40,7 +40,6 @@ class CardStack extends Component {
         
         return Math.sqrt(Math.pow(gestureState.dx, 2) + Math.pow(gestureState.dy, 2)) > 10
       },
-
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
         const isVerticalSwipe = Math.sqrt(Math.pow(gestureState.dx, 2) < Math.pow(gestureState.dy, 2))
         if (!this.props.verticalSwipe && isVerticalSwipe) 
@@ -100,6 +99,7 @@ class CardStack extends Component {
         }
       },
     });
+    console.log(this._panResponder)
   }
 
   componentDidUpdate(prevProps) {
