@@ -34,11 +34,6 @@ export default function ValueCard(props) {
         Keyboard.dismiss()
     }
 
-    const changeFront = text => {
-        if (text.length <= FRONT_MAX)
-            setCustomFront(text)
-    }
-
     if (props.card.custom) 
         return (
             <CardFlip onFlip={resetColor} style={{ ...styles.customContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity }} flipDirection="x" duration={400} ref={cardRef} {...props} >

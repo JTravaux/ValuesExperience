@@ -8,17 +8,15 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Multisetp from '../components/MultiStep'
 import { useSafeArea } from 'react-native-safe-area-context';
 
-const allSteps = [
-  { name: "Question 1", component: props => <ReflectionQuestion question="Do these reflect me at at my best?" {...props} /> },
-  { name: "Question 2", component: props => <ReflectionQuestion question="When faced with difficult decision do these values guide my decision making?" {...props} /> },
-  { name: "Question 3", component: props => <ReflectionQuestion question="Am I currently living these values?" {...props}/> },
-  { name: "Question 4", component: props => <ReflectionQuestion question="What happens when these values are not being honoured?" {...props}/> },
-  { name: "Question 5", component: props => <ReflectionQuestion question="What behaviours of mine support these values?" {...props}/> },
-  { name: "Question 6", component: props => <ReflectionQuestion question="What behaviours of mine run counter to these values?" {...props}/> },
-  
-];
+
 export default function DebriefScreen({ navigation, route }) {
   const insets = useSafeArea();
+
+  const allSteps = [
+    { name: "Question 1", component: props => <ReflectionQuestion question={`What do I need to change to be truly living my values? Do I have any "slippery behaviours" that I exhibit but run counter to my values?`} {...props} /> },
+    { name: "Question 2", component: props => <ReflectionQuestion question="What does it look like when I am at my best?" {...props} /> },
+    { name: "Question 3", component: props => <ReflectionQuestion question="What is one behaviour that supports my values?" {...props} navigation={navigation} route={route}/> },
+  ];
 
   return (
     <KeyboardAvoidingView style={{flex: 1}} behavior='padding'>
@@ -30,12 +28,12 @@ export default function DebriefScreen({ navigation, route }) {
               <Text style={styles.titleStyle}>Reflection</Text>
             </View>
 
-            <View style={{margin: 10, flexDirection: 'row', justifyContent: 'space-evenly'}}>
-              {route.params?.chosenOnes.map(chosenCard => <ValueCard width={145} height={205} card={chosenCard} key={"card_" + chosenCard.id} shadowOpacity={0.86} borderRadius={20}/>)}
+            <View style={{margin: 5, flexDirection: 'row', justifyContent: 'space-evenly'}}>
+              {route.params?.chosenOnes.map(chosenCard => <ValueCard width={160} height={225} card={chosenCard} key={"card_" + chosenCard.id} shadowOpacity={0.86} borderRadius={20}/>)}
             </View>
 
             <Multisetp 
-              style={{ marginTop: 10 }} 
+              style={{ marginTop: 5 }} 
               steps={allSteps}
               comeInOnNext="fadeInRight"
               OutOnNext="fadeOutLeft"
@@ -59,8 +57,16 @@ const ReflectionQuestion = props =>
   <View style={styles.bottomButtons}>
       <Button buttonStyle={styles.buttons} onPress={() => props.back()} icon={props.currentStep !== 0 ? <Icon name="arrow-circle-left" size={50} color="#FFFFFF" /> : null} />
       <Text style={styles.stepText}>{props.currentStep + 1}/{props.totalSteps + 1}</Text>
-      <Button buttonStyle={styles.buttons} onPress={() => props.next()} icon={props.currentStep !== props.totalSteps ? <Icon name="arrow-circle-right" size={50} color="#FFFFFF" /> : null} />
-     
+      
+      <Button 
+        buttonStyle={styles.buttons} 
+        onPress={() => props.currentStep !== props.totalSteps ? props.next() : console.log("DONE!")} 
+        icon={props.currentStep !== props.totalSteps ? 
+          <Icon name="arrow-circle-right" size={50} color="#FFFFFF" /> 
+        : 
+          <Icon name="check-circle" size={50} color="#81D093" onPress={() => props.navigation.navigate('end', { chosenOnes: props.route.params?.chosenOnes.map(c => c.name) })} />
+        } 
+      />
   </View>
 </View>
 
@@ -110,10 +116,10 @@ const styles = StyleSheet.create({
   },
   reflectionQ: {
     fontFamily: font.regular,
-    fontSize: 30,
+    fontSize: 25,
     textAlign: 'center',
     color: colors.fontColor,
-    marginTop: 30
+    marginTop: 10
   },
   bottomButtons: {
     flex: 1,

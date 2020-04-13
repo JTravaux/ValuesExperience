@@ -12,7 +12,7 @@ const instructions = [
   { id: 3, instruction: 'You can return cards for consideration by sliding them out of the "My Values" area' },
   { id: 4, instruction: 'Tap a card to toggle more detailed descriptions' },
   { id: 5, instruction: 'Once you’ve filled the My Values area a "Continue" button will appear to progress to the next activity' },
-  { id: 6, instruction: 'Blank card...' },
+  { id: 6, instruction: 'The values cards include a customizable blank card.  Touch the "Custom Value" title to add your own value card.  You can also tap the card to add custom description.' },
 ]
 
 export default function InstructionScreen({ navigation: { navigate } }) {

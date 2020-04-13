@@ -14,8 +14,8 @@ import { useSafeArea } from 'react-native-safe-area-context';
 
 const bigCardHeight = 400;
 const bigCardWidth = 280;
-const smallCardHeight = 140;
-const smallCardWidth = 100;
+const smallCardHeight = 170;
+const smallCardWidth = 120;
 const title = "Values Experience"
 
 const phases = [
@@ -104,7 +104,7 @@ export default function PlayScreen({ navigation, route }) {
 
     const completePhase = () => {
         if(goal.id === goals.length - 1)
-            navigation.navigate('endGame', { chosenOnes: myValues })
+            navigation.navigate('debrief', { chosenOnes: myValues })
         else {
             const keep = [...myValues]
             const oldGoals = [...goals]
@@ -155,7 +155,6 @@ export default function PlayScreen({ navigation, route }) {
 
     const addToMyValues = idx => {
         const card = deck[idx];
-        console.log("Card Added:", card)
 
         if (myValues.length !== goal.numToKeep) {
             if (card?.custom) {
@@ -163,7 +162,8 @@ export default function PlayScreen({ navigation, route }) {
                     setValues([...myValues, card])
                     let arr = [...deck]
                     arr.splice(arr.findIndex(c => c.id === card.id), 1, newCustomValue())
-                    setDeck(arr)
+                    processRemoveTemp(arr)
+                    //setDeck(arr)
                 }
             } else {
                 // Add the non custom card to "My Values"
@@ -210,16 +210,12 @@ export default function PlayScreen({ navigation, route }) {
                         <Icon onPress={goBack} name="arrow-left" size={25} color="#FFFFFF" />
                     </View>
 
-                    <View style={{ flex: 6, alignItems: 'center', alignSelf: 'center'}}>
+                    <View style={{ flex: 10, alignItems: 'center', alignSelf: 'center'}}>
                         <Text style={styles.titleText}>{title}</Text>
                     </View>
 
                     <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Button 
-                            onPress={() => myValues.length === goal.numToKeep ? completePhase() : setModalOpen(true)} 
-                            buttonStyle={{ backgroundColor: 'transparent' }} 
-                            icon={myValues.length === goal.numToKeep ? <Icon name="arrow-right" size={30} color="#00FF00" /> : <Icon name="question" size={30} color="#FFFFFF" />} 
-                        />
+                        <Button onPress={() => setModalOpen(true)} buttonStyle={{ backgroundColor: 'transparent' }} icon={<Icon name="question" size={30} color="#FFFFFF" />} />
                     </View>
 
                 </LinearGradient>
@@ -261,24 +257,51 @@ export default function PlayScreen({ navigation, route }) {
 
             <View style={styles.myValues}>
                 <View style={styles.pileTitle}>
-                    <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular }}>{myValues.length}/{goal.numToKeep}</Text>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', color: colors.fontColor, fontFamily: font.semibold, fontSize: 17}}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
-                    <Animatable.Text key={`${myValues.length}/${goal.numToKeep}`} style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular }} animation="tada">{myValues.length}/{goal.numToKeep}</Animatable.Text>
+                    <View>
+                        {myValues.length !== goal.numToKeep ? 
+                            <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular, fontSize: 20 }}>
+                                {myValues.length}/{goal.numToKeep}
+                            </Text>
+                        :
+                            <Button
+                                title={goal.id === 2 ? "Finish" : "Continue"}
+                                buttonStyle={{ margin: 0, padding: 2, paddingLeft: 10, paddingRight: 10, backgroundColor: "#0883BF" }}
+                                titleStyle={{ fontSize: 14, fontFamily: 'lato', color: "#0883BF" }}
+                            />
+                        }
+                    </View>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', color: colors.fontColor, fontFamily: font.semibold, fontSize: 20}}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
+                    
+                    <Animatable.View key={`${myValues.length}/${goal.numToKeep}`} animation="tada">
+                        {myValues.length !== goal.numToKeep ? 
+                            <Text style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular, fontSize: 20 }}>
+                                {myValues.length}/{goal.numToKeep}
+                            </Text>
+                        : 
+                            <Button 
+                                title={goal.id === 2 ? "Finish" : "Continue"}
+                                onPress={completePhase} 
+                                buttonStyle={{ margin: 0, padding: 2, paddingLeft: 10, paddingRight: 10, backgroundColor: "#0883BF", borderRadius: 10, borderWidth: 0.5, borderColor: '#FFFFFF'}} 
+                                titleStyle={{fontSize: 14, fontFamily: 'lato'}}
+                            />
+                        }
+                    </Animatable.View>
                 </View>
 
                 {/* "My Values" Card Pile */}
-                <View style={{flex: 1,alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
+                <View style={{ alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
                     <FlatList
-                        removeClippedSubviews
+                        style={{ height: smallCardHeight + 15}}
                         data={myValues}
                         horizontal
+                        showsHorizontalScrollIndicator={false}
                         scrollEnabled={myValues.length > 3 && scrollEnabled}
                         onContentSizeChange={() => keepScroller.current.scrollToEnd({animated: true})}
                         ref={keepScroller}
                         keyExtractor={item => "my_stack_" + item.id}
                         renderItem={({item}) => (
                             <CardStack
-                                style={{ alignItems: 'center' }}
+                                style={{ alignItems: 'center', width: smallCardWidth + 5, marginTop: 5}}
                                 disableBottomSwipe={true}
                                 disableLeftSwipe={true}
                                 disableRightSwipe={true}
@@ -287,13 +310,15 @@ export default function PlayScreen({ navigation, route }) {
                                 onSwipe={() =>  setScrollEnabled(false)}
                                 onSwipeEnd={() => setScrollEnabled(true)}
                                 renderNoMoreCards={() => <View style={{ width: 110 }} />}
-                                onSwipedTop={() => removeFromValues(item.id)}>
-                                <Animatable.View duration={300} animation='fadeInDown' easing="linear" >
+                                onSwipedTop={() => removeFromValues(item.id)}
+                            >
+                                <Animatable.View duration={300} animation='fadeInDown' easing="linear">
                                     <ValueCard
                                         width={smallCardWidth}
                                         height={smallCardHeight}
                                         card={item}
                                         shadowOpacity={0}
+                                        borderRadius={20}
                                     />
                                 </Animatable.View>
                             </CardStack>
@@ -333,10 +358,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: "space-between",
         margin: 5,
+        marginBottom: 0,
         backgroundColor: 'transparent'
     },
     mainPile: {
-        flex: 5,
+        flex: 4,
         backgroundColor: '#8CC9E6'
     },
     myValues: {
