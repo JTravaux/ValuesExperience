@@ -36,7 +36,6 @@ export default function PlayScreen({ navigation }) {
     const [goals, setGoals] = React.useState(phases) // object containing information about the different phases
     const [scrollEnabled, setScrollEnabled] = React.useState(true); // For scrolling the keep pile automagically
     const [menuOpen, setMenuOpen] = React.useState(false); // For opening and closing the menu
-    const [customCards, setCustomCards] = React.useState([]); // Keep track of fist phase custom cards
     
     const newCustomValue = () => { return { id: Date.now(), custom: true, front: '', back: '', name: "Custom Value" } }
 
@@ -49,16 +48,7 @@ export default function PlayScreen({ navigation }) {
 
     const editCustom = (id, side, text) => {
         let newDeck = [...deck]
-        let custom = [...customCards]
-
         let card = newDeck.find(c => c.id === id)
-        let existing = custom.find(c => c.id === id)
-
-        if(!existing)
-            custom.push(card)
-        else 
-            custom.splice(id,1,card)
-        
 
         if(side === 'front')
             card.front = text
@@ -66,26 +56,28 @@ export default function PlayScreen({ navigation }) {
             card.back = text
 
         setDeck(newDeck)
-        setCustomCards(custom)
-    }
-
-    const resetRound = () => {
-        setValues([])
-        setRemoveTemp([])
-        setAddTemp([])
     }
 
     const goBack = () => {
         if(goal.id === 0)
             navigation.goBack()
         else if (goal.id === 1) {
+            setLoading(true)
             setGoal(goals[0])
-            setDeck([...cards, ...goals[0].customCards]) // ????????????????????????????
-            resetRound()
+            setTimeout(() => {
+                setDeck(goals[0].remainingDeck)
+                setValues(goals[0].myValues)
+                setLoading(false)
+            }, 500)
+           
         } else {
+            setLoading(true)
             setGoal(goals[goal.id - 1])
-            setDeck(goals[goal.id - 2].chosenValues)
-            resetRound()
+            setTimeout(() => {
+                setDeck(goals[goal.id - 1].remainingDeck)
+                setValues(goals[goal.id - 1].myValues)
+                setLoading(false)
+            }, 500)
         }
     }
 
@@ -93,18 +85,29 @@ export default function PlayScreen({ navigation }) {
         if(goal.id === goals.length - 1) 
             navigation.navigate('debrief', { chosenOnes: myValues })
         else {
-            const keep = [...myValues]
-            const oldGoals = [...goals]
 
-            let currentGoal = oldGoals.find(g => g.id === goal.id)
-            currentGoal.chosenValues = keep
-            currentGoal.customCards = customCards
+            setLoading(true)
+            const keep = [...myValues]
+            const restOfDeck = [...deck]
+            const updateGoals = [...goals]
+
+            if (removeTemp.length > 0)
+                processRemoveTemp(restOfDeck)
+
+            if (addTemp.length > 0)
+                processAddTemp(restOfDeck)
+
+            let currentGoal = updateGoals.find(g => g.id === goal.id)
+            currentGoal.myValues = [...keep]
+            currentGoal.remainingDeck = [...restOfDeck]
 
             setGoal(goals[goal.id + 1])
-            setGoals(oldGoals)
+            setGoals(updateGoals)
+
             setTimeout(() => { 
                 setDeck(keep)
-                resetRound()
+                setValues([])
+                setLoading(false)
             }, 300)
         }
     }

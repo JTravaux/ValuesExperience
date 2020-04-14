@@ -9,8 +9,8 @@ export const phases = [
         id: 0,
         numToKeep: 10,
         totalCards: 22,
-        chosenValues: [],
-        customCards: [],
+        myValues: [],
+        remainingDeck: [],
         instructions: [
             `There are hundreds of values. On the following screen are 22 common ones. We invite you now to review these plus any you want to add and identify 10 that resonate most with you by sliding them down into the "My Values" area.`,
             `Once you have filled the "My Values" area you can continue to the next phase.`
@@ -20,8 +20,8 @@ export const phases = [
         id: 1,
         numToKeep: 5,
         totalCards: 10,
-        chosenValues: [],
-        customCards: [],
+        myValues: [],
+        remainingDeck: [],
         instructions: [
             `We are now going to drill deeper into your values. While all 10 of these values are important to you, what 5 values do you hold dear when living your life most fulfilled?`,
             `Once you have filled the "My Values" area you can continue to the next phase.`
@@ -31,8 +31,8 @@ export const phases = [
         id: 2,
         numToKeep: 2,
         totalCards: 5,
-        chosenValues: [],
-        customCards: [],
+        myValues: [],
+        remainingDeck: [],
         instructions: [
             `Of these 5 important values what 2 values do you feel you absolutely could not live without? When you are living at your best these would be the values that affect your decision making and actions the most. These are your Primary Values.`
         ]
