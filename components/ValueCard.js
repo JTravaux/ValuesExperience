@@ -9,8 +9,8 @@ import { Input } from 'react-native-elements';
 export default function ValueCard(props) {
     const cardRef = React.useRef();
 
-    const [customFront, setCustomFront] = React.useState('')
-    const [customBack, setCustomBack] = React.useState('')
+    const [customFront, setCustomFront] = React.useState(props.card.custom ? props.card.front : '')
+    const [customBack, setCustomBack] = React.useState(props.card.custom ? props.card.back : '')
     const [color, setColor] = React.useState(colors.fontColor)
 
     const resetColor = () => {
@@ -19,7 +19,7 @@ export default function ValueCard(props) {
     }
 
     const flipToBack = () => {
-        if(customFront.length > 0)
+        if(customFront.length > 0 && props.height >= 300)
             props.edit(props.card.id, 'front', customFront)
 
         cardRef.current.flip()
@@ -27,7 +27,7 @@ export default function ValueCard(props) {
     }
 
     const flipToFront = () => {
-        if (customBack.length > 0)
+        if (customBack.length > 0 && props.height >= 300)
             props.edit(props.card.id, 'back', customBack)
 
         cardRef.current.flip()
@@ -37,7 +37,7 @@ export default function ValueCard(props) {
     if (props.card.custom) 
         return (
             <CardFlip onFlip={resetColor} style={{ ...styles.customContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity }} flipDirection="x" duration={400} ref={cardRef} {...props} >
-                <TouchableOpacity activeOpacity={1} onPress={flipToBack} style={styles.customCard}>
+                <TouchableOpacity activeOpacity={1} onPress={() => flipToBack()} style={styles.customCard}>
                     <LinearGradient colors={['#c50ae4','#9198e5']} style={{...styles.customCard, padding: 10, justifyContent: 'space-between'}}>
                         {props.height > 300 && (<>
                             <Input
@@ -65,7 +65,7 @@ export default function ValueCard(props) {
                     </LinearGradient>
                 </TouchableOpacity>
 
-                <TouchableOpacity activeOpacity={1} onPress={flipToFront} style={styles.customCard}>
+                <TouchableOpacity activeOpacity={1} onPress={() => flipToFront()} style={styles.customCard}>
                     <LinearGradient colors={['#9198e5', '#c50ae4']} style={{ ...styles.customCard, padding: 10, justifyContent: 'center' }}>
                         {props.height > 300 && (<>
                             <View style={{ flex: 10, justifyContent: 'center' }}>

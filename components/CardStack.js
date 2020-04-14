@@ -74,17 +74,7 @@ class CardStack extends Component {
         
         const { verticalThreshold, horizontalThreshold, disableTopSwipe, disableLeftSwipe, disableRightSwipe, disableBottomSwipe } = this.props;
 
-        if (((Math.abs(gestureState.dx) > horizontalThreshold) || (Math.abs(gestureState.dx) > horizontalThreshold * 0.6 && swipeDuration < 150)) && this.props.horizontalSwipe) {
-          const swipeDirection = (gestureState.dx < 0) ? width * -1.5 : width * 1.5;
-
-          if (swipeDirection < 0 && !disableLeftSwipe) 
-            this._nextCard('left', swipeDirection, gestureState.dy, this.props.duration);
-          else if (swipeDirection > 0 && !disableRightSwipe) 
-            this._nextCard('right', swipeDirection, gestureState.dy, this.props.duration);
-          else 
-            this._resetCard();
-          
-        } else if (((Math.abs(gestureState.dy) > verticalThreshold) || (Math.abs(gestureState.dy) > verticalThreshold * 0.8 && swipeDuration < 150)) && this.props.verticalSwipe) {
+        if (((Math.abs(gestureState.dy) > verticalThreshold) || (Math.abs(gestureState.dy) > verticalThreshold * 0.8 && swipeDuration < 150)) && this.props.verticalSwipe) {
           const swipeDirection = (gestureState.dy < 0) ? height * -1 : height;
 
           if (swipeDirection < 0 && !disableTopSwipe) 
@@ -92,6 +82,17 @@ class CardStack extends Component {
           else if (swipeDirection > 0 && !disableBottomSwipe) 
             this._nextCard('bottom', gestureState.dx, swipeDirection, this.props.duration);
           else 
+            this._resetCard();
+
+        } 
+        else if (((Math.abs(gestureState.dx) > horizontalThreshold) || (Math.abs(gestureState.dx) > horizontalThreshold * 0.6 && swipeDuration < 150)) && this.props.horizontalSwipe) {
+          const swipeDirection = (gestureState.dx < 0) ? width * -1.5 : width * 1.5;
+
+          if (swipeDirection < 0 && !disableLeftSwipe)
+            this._nextCard('left', swipeDirection, gestureState.dy, this.props.duration);
+          else if (swipeDirection > 0 && !disableRightSwipe)
+            this._nextCard('right', swipeDirection, gestureState.dy, this.props.duration);
+          else
             this._resetCard();
         }
         else {
@@ -377,6 +378,11 @@ class CardStack extends Component {
       outputRange: this.props.outputRotationRange,
       extrapolate: 'clamp',
     });
+    const shrink = drag.y.interpolate({
+      inputRange: [0, height],
+      outputRange: [1, 0.2],
+      extrapolate: 'clamp',
+    });
 
     return (
       <View {...this._panResponder.panHandlers} style={[{ position: 'relative' }, this.props.style]}>
@@ -397,7 +403,7 @@ class CardStack extends Component {
               { rotate: (topCard === 'cardB') ? rotate : '0deg' },
               { translateX: (topCard === 'cardB') ? drag.x : 0 },
               { translateY: (topCard === 'cardB') ? drag.y : 0 },
-              { scale: (topCard === 'cardB') ? 1 : scale },
+              { scale: (topCard === 'cardB') ? shrink : scale },
             ]
           }, this.props.cardContainerStyle]}>
           {cardB}
@@ -416,7 +422,7 @@ class CardStack extends Component {
               { rotate: (topCard === 'cardA') ? rotate : '0deg' },
               { translateX: (topCard === 'cardA') ? drag.x : 0 },
               { translateY: (topCard === 'cardA') ? drag.y : 0 },
-              { scale: (topCard === 'cardA') ? 1 : scale },
+              { scale: (topCard === 'cardA') ? shrink : scale },
             ]
           }, this.props.cardContainerStyle]}>
           {cardA}

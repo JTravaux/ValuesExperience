@@ -8,9 +8,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import CardStack from '../components/CardStack';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { StyleSheet, Text, View, ActivityIndicator, Dimensions } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
+import {  Menu, Divider, Provider } from 'react-native-paper';
+import { game_instructions, phases } from '../Instructions';
 
 const bigCardHeight = 400;
 const bigCardWidth = 280;
@@ -18,36 +20,7 @@ const smallCardHeight = 170;
 const smallCardWidth = 120;
 const title = "Values Experience"
 
-const phases = [
-    {   id: 0, 
-        numToKeep: 10, 
-        totalCards: 22, 
-        chosenValues: [],
-        instructions: [
-            `There are hundreds of values. On the next screen are 22 common ones. We invite you now to review these plus any you want to add and identify 10 that resonate most with you by sliding them down into the "My Values" area.`,
-            `Once you have filled the "My Values" area you can continue to the next phase.`
-        ] 
-    },
-    {   id: 1, 
-        numToKeep: 5, 
-        totalCards: 10, 
-        chosenValues: [],
-        instructions: [
-            `We are now going to drill deeper into your values. While all 10 of these values are important to you, what 5 values do you hold dear when living your life most fulfilled?`,
-            `Once you have filled the "My Values" area you can continue to the next phase.`
-        ] 
-    },
-    {   id: 2, 
-        numToKeep: 2, 
-        totalCards: 5,
-        chosenValues: [], 
-        instructions: [
-            `Of these 5 important values what 2 values do you feel you absolutely could not live without? When you are living at your best these would be the values that affect your decision making and actions the most. These are your Primary Values.`
-        ] 
-    }
-]
-
-export default function PlayScreen({ navigation, route }) {
+export default function PlayScreen({ navigation }) {
     
     const insets = useSafeArea();
     const keepScroller = React.useRef(); // used to scroll the scrollviewer programatically
@@ -57,29 +30,43 @@ export default function PlayScreen({ navigation, route }) {
     const [deck, setDeck] = React.useState([]); // The main pile of cards 
     const [addTemp, setAddTemp] = React.useState([]); // The cards to be added to the main deck
     const [loading, setLoading] = React.useState(false); // Indicator for when a removeal is happening
-    const [modalOpen, setModalOpen] = React.useState(false) // phase instruction model
+    const [goalModalOpen, setGoalModalOpen] = React.useState(false) // phase instruction model
+    const [insModalOpen, setInsModalOpen] = React.useState(false) // game instruction model
     const [goal, setGoal] = React.useState(phases[0]) // object containing information about the current goal ("Phase")
     const [goals, setGoals] = React.useState(phases) // object containing information about the different phases
     const [scrollEnabled, setScrollEnabled] = React.useState(true); // For scrolling the keep pile automagically
+    const [menuOpen, setMenuOpen] = React.useState(false); // For opening and closing the menu
+    const [customCards, setCustomCards] = React.useState([]); // Keep track of fist phase custom cards
+    
     const newCustomValue = () => { return { id: Date.now(), custom: true, front: '', back: '', name: "Custom Value" } }
 
     React.useEffect(() => { 
         if (goal.id === 0)
             setDeck([...cards, newCustomValue()])
 
-        setModalOpen(true)
+        setGoalModalOpen(true)
     }, [goal])
 
     const editCustom = (id, side, text) => {
         let newDeck = [...deck]
+        let custom = [...customCards]
+
         let card = newDeck.find(c => c.id === id)
+        let existing = custom.find(c => c.id === id)
+
+        if(!existing)
+            custom.push(card)
+        else 
+            custom.splice(id,1,card)
         
+
         if(side === 'front')
             card.front = text
         else if (side === 'back')
             card.back = text
 
         setDeck(newDeck)
+        setCustomCards(custom)
     }
 
     const resetRound = () => {
@@ -93,7 +80,7 @@ export default function PlayScreen({ navigation, route }) {
             navigation.goBack()
         else if (goal.id === 1) {
             setGoal(goals[0])
-            setDeck(cards)
+            setDeck([...cards, ...goals[0].customCards]) // ????????????????????????????
             resetRound()
         } else {
             setGoal(goals[goal.id - 1])
@@ -103,17 +90,22 @@ export default function PlayScreen({ navigation, route }) {
     }
 
     const completePhase = () => {
-        if(goal.id === goals.length - 1)
+        if(goal.id === goals.length - 1) 
             navigation.navigate('debrief', { chosenOnes: myValues })
         else {
             const keep = [...myValues]
             const oldGoals = [...goals]
-            oldGoals.find(g => g.id === goal.id).chosenValues = keep
+
+            let currentGoal = oldGoals.find(g => g.id === goal.id)
+            currentGoal.chosenValues = keep
+            currentGoal.customCards = customCards
 
             setGoal(goals[goal.id + 1])
             setGoals(oldGoals)
-            setDeck(keep)
-            resetRound()
+            setTimeout(() => { 
+                setDeck(keep)
+                resetRound()
+            }, 300)
         }
     }
 
@@ -200,136 +192,157 @@ export default function PlayScreen({ navigation, route }) {
         } else
             setAddTemp([...addTemp, removed])
     }
+    
+    const openGoalInstructions = () => {
+        setMenuOpen(false)
+        setGoalModalOpen(true)
+    }
+
+    const openGameInstructions = () => {
+        setMenuOpen(false)
+        setInsModalOpen(true)
+    }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.title}>
-                <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{ flex: 1, alignItems: 'center', flexDirection: 'row', paddingTop: insets.top + 5, paddingRight: 15, paddingLeft: 15, paddingBottom: insets.top + 5}}>
-                    
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Icon onPress={goBack} name="arrow-left" size={25} color="#FFFFFF" />
-                    </View>
+        <Provider>
+            <View style={styles.container}>
+                <View style={styles.title}>
+                    <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{ flex: 1, alignItems: 'center', flexDirection: 'row', paddingTop: insets.top + 5, paddingRight: 15, paddingLeft: 15, paddingBottom: insets.top + 5}}>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                            <TouchableOpacity onPress={goBack}>
+                                <Icon  name="arrow-left" size={25} color="#FFFFFF" />
+                            </TouchableOpacity>
+                        </View>
 
-                    <View style={{ flex: 10, alignItems: 'center', alignSelf: 'center'}}>
-                        <Text style={styles.titleText}>{title}</Text>
-                    </View>
+                        <View style={{ flex: 10, alignItems: 'center', alignSelf: 'center'}}>
+                            <Text style={styles.titleText}>{title}</Text>
+                        </View>
 
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Button onPress={() => setModalOpen(true)} buttonStyle={{ backgroundColor: 'transparent' }} icon={<Icon name="question" size={30} color="#FFFFFF" />} />
-                    </View>
-
-                </LinearGradient>
-            </View>
-
-            <View style={styles.mainPile}>
-                {!loading && deck && (
-                    <Animatable.View collapsable={true} animation="bounceInDown" duration={1000} style={styles.content} key="mainPileDeck">
-                        <CardStack
-                            duration={130}
-                            key={deck.length}
-                            secondCardZoom={0.95}
-                            style={styles.content}
-                            verticalThreshold={Dimensions.get('screen').width / 4}
-                            onSwipedAll={onSwipeAll}
-                            horizontalThreshold={Dimensions.get('screen').width / 2}
-                            loop={removeTemp.length === 0 && addTemp.length === 0}
-                            onSwipedBottom={addToMyValues}
-                            renderNoMoreCards={() => <View />}
-                            disableBottomSwipe={myValues.length === goal.numToKeep}
-                        >
-                            {deck.map(card =>
-                                <ValueCard
-                                    key={"card_" + card.id}
-                                    card={card}
-                                    width={bigCardWidth}
-                                    height={bigCardHeight}
-                                    borderRadius={25}
-                                    shadowOpacity={0.85}
-                                    edit={editCustom}
-                                />
-                            )}
-                        </CardStack>
-                    </Animatable.View>
-                )}
-
-                {loading && (<ActivityIndicator size="large" color="#0883BF" style={{flex: 1}} />)}
-            </View>
-
-            <View style={styles.myValues}>
-                <View style={styles.pileTitle}>
-                    <View>
-                        {myValues.length !== goal.numToKeep ? 
-                            <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular, fontSize: 20 }}>
-                                {myValues.length}/{goal.numToKeep}
-                            </Text>
-                        :
-                            <Button
-                                title={goal.id === 2 ? "Finish" : "Continue"}
-                                buttonStyle={{ margin: 0, padding: 2, paddingLeft: 10, paddingRight: 10, backgroundColor: "#0883BF" }}
-                                titleStyle={{ fontSize: 14, fontFamily: 'lato', color: "#0883BF" }}
-                            />
-                        }
-                    </View>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', color: colors.fontColor, fontFamily: font.semibold, fontSize: 20}}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
-                    
-                    <Animatable.View key={`${myValues.length}/${goal.numToKeep}`} animation="tada">
-                        {myValues.length !== goal.numToKeep ? 
-                            <Text style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.regular, fontSize: 20 }}>
-                                {myValues.length}/{goal.numToKeep}
-                            </Text>
-                        : 
-                            <Button 
-                                title={goal.id === 2 ? "Finish" : "Continue"}
-                                onPress={completePhase} 
-                                buttonStyle={{ margin: 0, padding: 2, paddingLeft: 10, paddingRight: 10, backgroundColor: "#0883BF", borderRadius: 10, borderWidth: 0.5, borderColor: '#FFFFFF'}} 
-                                titleStyle={{fontSize: 14, fontFamily: 'lato'}}
-                            />
-                        }
-                    </Animatable.View>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => setMenuOpen(true)}>
+                                <Menu visible={menuOpen} onDismiss={() => setMenuOpen(false)} anchor={<Icon name="bars" size={25} color="#FFFFFF" />}>
+                                    <Menu.Item onPress={openGoalInstructions} title="View Current Goal" />
+                                    <Menu.Item onPress={openGameInstructions} title="View Instructions" />
+                                    <Divider />
+                                    <Menu.Item onPress={() => navigation.navigate('purpose')} title="Restart Experience" />
+                                </Menu>
+                            </TouchableOpacity>
+                        </View>
+                    </LinearGradient>
                 </View>
 
-                {/* "My Values" Card Pile */}
-                <View style={{ alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
-                    <FlatList
-                        style={{ height: smallCardHeight + 15}}
-                        data={myValues}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        scrollEnabled={myValues.length > 3 && scrollEnabled}
-                        onContentSizeChange={() => keepScroller.current.scrollToEnd({animated: true})}
-                        ref={keepScroller}
-                        keyExtractor={item => "my_stack_" + item.id}
-                        renderItem={({item}) => (
+                <View style={styles.mainPile}>
+                    {!loading && deck && (
+                        <Animatable.View collapsable={true} animation="bounceInDown" duration={1000} style={styles.content} key="mainPileDeck">
                             <CardStack
-                                style={{ alignItems: 'center', width: smallCardWidth + 5, marginTop: 5}}
-                                disableBottomSwipe={true}
-                                disableLeftSwipe={true}
-                                disableRightSwipe={true}
-                                horizontalSwipe={false}
-                                verticalThreshold={50}
-                                onSwipe={() =>  setScrollEnabled(false)}
-                                onSwipeEnd={() => setScrollEnabled(true)}
-                                renderNoMoreCards={() => <View style={{ width: 110 }} />}
-                                onSwipedTop={() => removeFromValues(item.id)}
+                                duration={130}
+                                key={deck.length}
+                                secondCardZoom={0.85}
+                                style={styles.content}
+                                verticalThreshold={Dimensions.get('screen').height / 4}
+                                onSwipedAll={onSwipeAll}
+                                horizontalThreshold={Dimensions.get('screen').width / 4}
+                                loop={removeTemp.length === 0 && addTemp.length === 0}
+                                onSwipedBottom={addToMyValues}
+                                renderNoMoreCards={() => <View />}
+                                disableBottomSwipe={myValues.length === goal.numToKeep}
                             >
-                                <Animatable.View duration={300} animation='fadeInDown' easing="linear">
+                                {deck.map(card =>
                                     <ValueCard
-                                        width={smallCardWidth}
-                                        height={smallCardHeight}
-                                        card={item}
-                                        shadowOpacity={0}
-                                        borderRadius={20}
+                                        key={"card_" + card.id}
+                                        card={card}
+                                        width={bigCardWidth}
+                                        height={bigCardHeight}
+                                        borderRadius={25}
+                                        shadowOpacity={0.85}
+                                        edit={editCustom}
                                     />
-                                </Animatable.View>
+                                )}
                             </CardStack>
-                        )}
-                    >
-                    </FlatList>
-                </View>
-            </View>
+                        </Animatable.View>
+                    )}
 
-            <GoalOverlay visible={modalOpen} instructions={goal.instructions} close={() => setModalOpen(false)} />
-        </View>
+                    {loading && (<ActivityIndicator size="large" color="#0883BF" style={{flex: 1}} />)}
+                </View>
+
+                <View style={styles.myValues}>
+                    <View style={styles.pileTitle}>
+                        <View>
+                            {myValues.length !== goal.numToKeep ? 
+                                <Text style={{ textAlign: 'left', color: '#0883BF', fontFamily: font.regular, fontSize: 20 }}>
+                                    {myValues.length}/{goal.numToKeep}
+                                </Text>
+                            :
+                                <Button
+                                    title={goal.id === 2 ? "Finish" : "Continue"}
+                                    buttonStyle={{ margin: 0, padding: 2, paddingLeft: 10, paddingRight: 10, backgroundColor: "#0883BF" }}
+                                    titleStyle={{ fontSize: 14, fontFamily: 'lato', color: "#0883BF" }}
+                                />
+                            }
+                        </View>
+                        <Text style={{ textAlign: 'center', color: colors.fontColor, fontFamily: font.bold, fontSize: 20}}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
+                        
+                        <Animatable.View key={`${myValues.length}/${goal.numToKeep}`} animation="tada">
+                            {myValues.length !== goal.numToKeep ? 
+                                <Text style={{ textAlign: 'right', color: colors.fontColor, fontFamily: font.light, fontSize: 17 }}>
+                                    {myValues.length}/{goal.numToKeep}
+                                </Text>
+                            : 
+                                <Button 
+                                    title={goal.id === 2 ? "Finish" : "Continue"}
+                                    onPress={completePhase} 
+                                    buttonStyle={{ margin: 0, padding: 2, paddingLeft: 10, paddingRight: 10, backgroundColor: "#0883BF", borderRadius: 10, borderWidth: 0.5, borderColor: '#FFFFFF'}} 
+                                    titleStyle={{fontSize: 14, fontFamily: 'lato'}}
+                                />
+                            }
+                        </Animatable.View>
+                    </View>
+
+                    {/* "My Values" Card Pile */}
+                    <View style={{ alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
+                        <FlatList
+                            style={{ height: smallCardHeight + 15}}
+                            data={myValues}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            scrollEnabled={myValues.length > 3 && scrollEnabled}
+                            onContentSizeChange={() => keepScroller.current.scrollToEnd({animated: true})}
+                            ref={keepScroller}
+                            keyExtractor={item => "my_stack_" + item.id}
+                            renderItem={({item}) => (
+                                <CardStack
+                                    style={{ alignItems: 'center', width: smallCardWidth + 10, marginTop: 5}}
+                                    disableBottomSwipe={true}
+                                    disableLeftSwipe={true}
+                                    disableRightSwipe={true}
+                                    horizontalSwipe={false}
+                                    verticalThreshold={50}
+                                    onSwipe={() =>  setScrollEnabled(false)}
+                                    onSwipeEnd={() => setScrollEnabled(true)}
+                                    renderNoMoreCards={() => <View style={{ width: 110 }} />}
+                                    onSwipedTop={() => removeFromValues(item.id)}
+                                >
+                                    <Animatable.View duration={500} animation='bounceIn' easing="linear">
+                                        <ValueCard
+                                            width={smallCardWidth}
+                                            height={smallCardHeight}
+                                            card={item}
+                                            shadowOpacity={0}
+                                            borderRadius={20}
+                                        />
+                                    </Animatable.View>
+                                </CardStack>
+                            )}
+                        >
+                        </FlatList>
+                    </View>
+                </View>
+
+                <GoalOverlay title="Current Goal" visible={goalModalOpen} instructions={goal.instructions} close={() => setGoalModalOpen(false)} goal={true} />
+                <GoalOverlay title="Game Instructions" visible={insModalOpen} instructions={game_instructions} close={() => setInsModalOpen(false)} goal={false} />
+
+            </View>
+        </Provider>
     );
 }
 
@@ -367,6 +380,7 @@ const styles = StyleSheet.create({
     },
     myValues: {
         flex: 2,
+        position: 'relative',
         backgroundColor: '#0883BF',
         zIndex: -1
     },

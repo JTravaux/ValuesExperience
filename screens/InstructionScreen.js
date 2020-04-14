@@ -4,16 +4,8 @@ import { Button } from 'react-native-elements';
 import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { game_instructions } from '../Instructions';
 
-const instructions = [
-  { id: 0, instruction: 'Each value is represented by a digital card'},
-  { id: 1, instruction: 'Swipe left or right through the cards ' },
-  { id: 2, instruction: 'For values which resonate most with you slide them down into the area labeled "My Values"' },
-  { id: 3, instruction: 'You can return cards for consideration by sliding them out of the "My Values" area' },
-  { id: 4, instruction: 'Tap a card to toggle more detailed descriptions' },
-  { id: 5, instruction: 'Once you’ve filled the My Values area a "Continue" button will appear to progress to the next activity' },
-  { id: 6, instruction: 'The values cards include a customizable blank card.  Touch the "Custom Value" title to add your own value card.  You can also tap the card to add custom description.' },
-]
 
 export default function InstructionScreen({ navigation: { navigate } }) {
   const insets = useSafeArea();
@@ -30,9 +22,9 @@ export default function InstructionScreen({ navigation: { navigate } }) {
             <FlatList 
               scrollEnabled={false}
               style={{marginTop: 20}}
-              data={instructions} 
-              renderItem={({ item }) => <Text style={styles.instructionPoint}>{`\u2022 ${item.instruction}`}</Text>}
-              keyExtractor={item => "instruction_" + item.id}
+              data={game_instructions} 
+              renderItem={({ item }) => <Text style={styles.instructionPoint}>{`\u2022 ${item}`}</Text>}
+              keyExtractor={(item, idx) => "instruction_" + idx}
             />
           </View>
 
@@ -70,7 +62,7 @@ const styles = StyleSheet.create({
     margin: 10,
     fontFamily: font.regular,
     color: colors.fontColor,
-    textAlign: 'left'
+    textAlign: 'justify'
   },
   titleStyle: {
     fontFamily: font.semibold,

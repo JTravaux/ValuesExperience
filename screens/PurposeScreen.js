@@ -6,9 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
 
 const backgroundText = [
-    "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences. Exploring one's values requires much introspection and personal contemplation in order to identify the primary values that motive, direct and fulfill us.",
-    "Often, our actions contradict our values and this can feel uncomfortable or wrong without us knowing why. Before we can begin to adjust our actions to align with our values we first need to clearly identify what those values are. Research suggests that while we may connect with many values we can only focus on a few at a time. These are our primary values.",
-    "This exercise aims to help you identify and reflect on your primary values."
+    "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences.",
+    "Exploring one's values requires much introspection and personal contemplation in order to identify the primary values that motive, direct and fulfill us. Before we can begin to adjust our actions to align with our values we first need to clearly identify what those values are.",
+    "This app is designed to assist you in identifying your own personal values and giving you some prompts to reflect on them."
 ]
 
 export default function PurposeScreen({navigation: { navigate } }) {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     margin: 10,
     fontFamily: font.regular,
     color: colors.fontColor,
-    textAlign: 'left'
+    textAlign: 'justify'
   },
   titleStyle: {
     fontFamily: font.semibold,

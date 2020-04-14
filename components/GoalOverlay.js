@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Modal, { ModalTitle, ModalContent, ModalFooter, ModalButton, ScaleAnimation } from 'react-native-modals';
+import Modal, { ModalTitle, ModalContent, ModalFooter, View, SlideAnimation } from 'react-native-modals';
 import { StyleSheet, Text, Dimensions } from 'react-native'
 import { colors, font } from '../constants/Styles';
 
@@ -12,22 +12,24 @@ export default function GoalOverlay (props) {
     }, [props.instructions])
 
     return (
-        <Modal
-            width={Dimensions.get('screen').width * 0.8}
+        <Modal.BottomModal
+            height={props.goal ? 0.45 : 0.65}
             visible={props.visible}
-            overlayOpacity={0.75}
+            overlayOpacity={0.85}
+            swipeThreshold={100}
             onTouchOutside={props.close}
-            modalTitle={<ModalTitle title="Goal" textStyle={{ fontFamily: font.semibold }} />}
-            modalAnimation={new ScaleAnimation()}
-            footer={<ModalFooter><ModalButton text="Dismiss" onPress={() => props.close()} /></ModalFooter>}
+            modalAnimation={new SlideAnimation({slideFrom: 'bottom'})}
+            onSwipeOut={props.close}
         >
-            <ModalContent>
+            <Text style={{ fontFamily: font.bold, color: colors.fontColor, fontSize: 25, textAlign: 'center', backgroundColor: '#0883BF', paddingTop: 5}}>{props.title}</Text>
+            <ModalContent style={{ backgroundColor: '#0883BF', height: '95%', justifyContent: 'space-between'}}>
                 {instructions.map((ins, idx) => <Text key={"goal_ins_" + idx} style={styles.phaseInstruction}>{ins}</Text>)}
+                <Text style={{textAlign: 'center', fontFamily: font.light, color: colors.fontColor}}>(swipe down to dismiss this notice)</Text>
             </ModalContent>
-        </Modal>
+        </Modal.BottomModal>
     )
 }
-
+ 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -49,8 +51,9 @@ const styles = StyleSheet.create({
     },
     phaseInstruction: {
         fontFamily: font.regular,
-        color: '#000',
-        margin: 10,
-        textAlign: 'justify'
+        color: colors.fontColor,
+        fontSize: 17,
+        textAlign: 'justify',
+        marginTop: 10,
     }
 });
