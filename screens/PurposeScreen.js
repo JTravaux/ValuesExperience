@@ -4,6 +4,7 @@ import { Button } from 'react-native-elements';
 import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 const backgroundText = [
     "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences.",
@@ -13,6 +14,10 @@ const backgroundText = [
 
 export default function PurposeScreen({navigation: { navigate } }) {
   const insets = useSafeArea();
+
+  React.useEffect(() => {
+    Amplitude.logEvent("Visited Background Screen")
+  }, [])
 
   return (
     <View style={styles.container}>

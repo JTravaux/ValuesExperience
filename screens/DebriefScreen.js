@@ -7,7 +7,7 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Multisetp from '../components/MultiStep'
 import { useSafeArea } from 'react-native-safe-area-context';
-
+import * as Amplitude from 'expo-analytics-amplitude';
 
 export default function DebriefScreen({ navigation, route }) {
   const insets = useSafeArea();
@@ -17,6 +17,10 @@ export default function DebriefScreen({ navigation, route }) {
     { name: "Question 2", component: props => <ReflectionQuestion question="What does it look like when I am at my best?" {...props} /> },
     { name: "Question 3", component: props => <ReflectionQuestion question="What is one behaviour that supports my values?" {...props} navigation={navigation} route={route}/> },
   ];
+
+  React.useEffect(() => {
+    Amplitude.logEvent("Visited Reflection Questions")
+  }, [])
 
   return (
     <KeyboardAvoidingView style={{flex: 1}} behavior='padding'>

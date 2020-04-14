@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import PurposeScreen from "./screens/PurposeScreen";
 import InstructionScreen from "./screens/InstructionScreen"
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 import PlayScreen from './screens/PlayScreen';
 import DebriefScreen from './screens/DebriefScreen';
@@ -19,6 +20,8 @@ export default function App(props) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    Amplitude.initialize("178c6b0fda8b1cff768ddff3f0b87af3")
+
     async function loadResourcesAsync() {
       try {
         SplashScreen.preventAutoHide();
@@ -27,7 +30,6 @@ export default function App(props) {
         await Font.loadAsync({ ...Ionicons.font, 'lato-semibold': require('./assets/fonts/Lato-Semibold.ttf') });
         await Font.loadAsync({ ...Ionicons.font, 'lato-light': require('./assets/fonts/Lato-Light.ttf') });
         await Font.loadAsync({ ...Ionicons.font, 'harring': require('./assets/fonts/harring.ttf') });
-
       } catch (e) {
         console.warn(e);
       } finally {

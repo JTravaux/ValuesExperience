@@ -13,6 +13,7 @@ import { StyleSheet, Text, View, ActivityIndicator, Dimensions } from 'react-nat
 import { useSafeArea } from 'react-native-safe-area-context';
 import {  Menu, Divider, Provider } from 'react-native-paper';
 import { game_instructions, phases } from '../Instructions';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 const bigCardHeight = 400;
 const bigCardWidth = 280;
@@ -40,8 +41,14 @@ export default function PlayScreen({ navigation }) {
     const newCustomValue = () => { return { id: Date.now(), custom: true, front: '', back: '', name: "Custom Value" } }
 
     React.useEffect(() => { 
-        if (goal.id === 0)
+        if (goal.id === 0) {
+            Amplitude.logEvent("Visited Phase 1")
             setDeck([...cards, newCustomValue()])
+        } 
+        else if (goal.id === 1) 
+            Amplitude.logEvent("Visited Phase 2")
+        else if (goal.id === 2) 
+            Amplitude.logEvent("Visited Phase 3")
 
         setGoalModalOpen(true)
     }, [goal])

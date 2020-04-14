@@ -5,10 +5,15 @@ import { colors, font } from '../constants/Styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { game_instructions } from '../Instructions';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 
 export default function InstructionScreen({ navigation: { navigate } }) {
   const insets = useSafeArea();
+
+  React.useEffect(() => {
+    Amplitude.logEvent("Visited Instructions Screen")
+  }, [])
 
   return (
     <View style={styles.container}>

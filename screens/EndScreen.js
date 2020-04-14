@@ -6,9 +6,14 @@ import * as WebBrowser from 'expo-web-browser';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 export default function EndScreen({ route: { params } }) {
     const insets = useSafeArea();
+
+    React.useEffect(() => {
+        Amplitude.logEvent("Visited Final Values In Action")
+    }, [])
 
     return (
         <View style={styles.container}>
