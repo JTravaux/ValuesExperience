@@ -1,12 +1,14 @@
 export const game_instructions = [
     'Each value is represented by a digital card. Swipe left or right through the cards and tap a card to toggle more detailed descriptions.',
     'For values which resonate most with you slide them down into the area labeled "My Values". You can return cards for consideration by sliding them out of the area. Once you’ve filled the area a "Continue" button will appear to progress to the next activity',
-    'The values cards include a customizable blank card. Touch the "Custom Value" title to add your own value card. You can also tap the card to add custom description.',
+    'The values cards include a customizable blank card. Tap the "Custom Value" title to add your own value card. You can also tap the card to add custom description.',
 ]
 
 export const phases = [
     {
         id: 0,
+        title: "First Activity",
+        nextInstruction: "Continue",
         numToKeep: 10,
         totalCards: 22,
         myValues: [],
@@ -18,6 +20,8 @@ export const phases = [
     },
     {
         id: 1,
+        title: "Second Activity",
+        nextInstruction: "Continue",
         numToKeep: 5,
         totalCards: 10,
         myValues: [],
@@ -29,6 +33,8 @@ export const phases = [
     },
     {
         id: 2,
+        title: "Final Activity",
+        nextInstruction: "Finish",
         numToKeep: 2,
         totalCards: 5,
         myValues: [],

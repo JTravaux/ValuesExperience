@@ -6,6 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
+// For development only, will be moved eventually
+const VERSION = "Alpha: 0.0.3";
+
 const backgroundText = [
     "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences.",
     "Exploring one's values requires much introspection and personal contemplation in order to identify the primary values that motive, direct and fulfill us. Before we can begin to adjust our actions to align with our values we first need to clearly identify what those values are.",
@@ -31,7 +34,7 @@ export default function PurposeScreen({navigation: { navigate } }) {
 
           <View style={styles.bottomBtns}>
             <Button onPress={() => navigate('instructions')} title="Next" raised activeOpacity={0.7} containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
-            <Text style={{ textAlign: 'center', color: '#CACACA'}}>Alpha: 0.0.2</Text>
+            <Text style={{ textAlign: 'center', color: '#CACACA' }} onPress={() => navigate('end', { chosenOnes: ['Location', 'Wealth'] })}>{VERSION}</Text>
           </View>
 
         </View>

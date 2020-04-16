@@ -2,10 +2,12 @@ import * as React from 'react';
 import Modal, { ModalTitle, ModalContent, ModalFooter, View, SlideAnimation } from 'react-native-modals';
 import { StyleSheet, Text, Dimensions } from 'react-native'
 import { colors, font } from '../constants/Styles';
+import { useSafeArea } from 'react-native-safe-area-context';
 
-export default function GoalOverlay (props) {
+export default function SlideOverlay (props) {
 
     const [instructions, setInstructions] = React.useState([])
+    const insets = useSafeArea();
 
     React.useEffect(() => {
         setInstructions(props.instructions)
@@ -24,7 +26,7 @@ export default function GoalOverlay (props) {
             <Text style={{ fontFamily: font.bold, color: colors.fontColor, fontSize: 25, textAlign: 'center', backgroundColor: '#0883BF', paddingTop: 5}}>{props.title}</Text>
             <ModalContent style={{ backgroundColor: '#0883BF', height: '95%', justifyContent: 'space-between'}}>
                 {instructions.map((ins, idx) => <Text key={"goal_ins_" + idx} style={styles.phaseInstruction}>{ins}</Text>)}
-                <Text style={{textAlign: 'center', fontFamily: font.light, color: colors.fontColor}}>(swipe down to dismiss this notice)</Text>
+                <Text style={{ textAlign: 'center', fontFamily: font.light, color: colors.fontColor, paddingBottom: insets.bottom + 10 }}>(swipe down to dismiss this notice)</Text>
             </ModalContent>
         </Modal.BottomModal>
     )

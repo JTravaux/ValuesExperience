@@ -1,10 +1,13 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, Keyboard, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions } from 'react-native';
 import CardFlip from 'react-native-card-flip';
 import Svg, { Image } from 'react-native-svg'
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, font } from '../constants/Styles';
 import { Input } from 'react-native-elements';
+import * as Amplitude from 'expo-analytics-amplitude';
+
+const bigHeightThresh = Dimensions.get('screen').height / 2;
 
 export default function ValueCard(props) {
     const cardRef = React.useRef();
@@ -14,12 +17,13 @@ export default function ValueCard(props) {
     const [color, setColor] = React.useState(colors.fontColor)
 
     const resetColor = () => {
+        logFlip()
         if (color !== colors.fontColor)
             setTimeout(() => { setColor(colors.fontColor) }, 100)
     }
 
     const flipToBack = () => {
-        if(customFront.length > 0 && props.height >= 300)
+        if(customFront.length > 0 && props.height === bigHeightThresh)
             props.edit(props.card.id, 'front', customFront)
 
         cardRef.current.flip()
@@ -27,11 +31,18 @@ export default function ValueCard(props) {
     }
 
     const flipToFront = () => {
-        if (customBack.length > 0 && props.height >= 300)
+        if (customBack.length > 0 && props.height === bigHeightThresh)
             props.edit(props.card.id, 'back', customBack)
 
         cardRef.current.flip()
         Keyboard.dismiss()
+    }
+
+    const logFlip = () => {
+        Amplitude.logEventWithProperties("Card Flipped", {   
+            card: props.card.custom ? props.card.front : props.card.name, 
+            location: props.height === bigHeightThresh ? "Main Deck" : (props.height === 225 ? "No Deck - Reflection" : "My Values Deck") 
+        })
     }
 
     if (props.card.custom) 
@@ -39,7 +50,7 @@ export default function ValueCard(props) {
             <CardFlip onFlip={resetColor} style={{ ...styles.customContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity }} flipDirection="x" duration={400} ref={cardRef} {...props} >
                 <TouchableOpacity activeOpacity={1} onPress={() => flipToBack()} style={styles.customCard}>
                     <LinearGradient colors={['#c50ae4','#9198e5']} style={{...styles.customCard, padding: 10, justifyContent: 'space-between'}}>
-                        {props.height > 300 && (<>
+                        {props.height === bigHeightThresh && (<>
                             <Input
                                 multiline
                                 blurOnSubmit={true}
@@ -57,7 +68,7 @@ export default function ValueCard(props) {
                             <Text style={styles.how}>Tap the title to customize</Text>
                         </>)}
 
-                        {props.height <= 300 && <Text style={{
+                        {props.height < bigHeightThresh && <Text style={{
                             ...styles.frontTextSmall, 
                             fontSize: props.card.front.length > 7 ? 12 : 20,
                             lineHeight: props.card.front.length > 7 ? 15 : 30,
@@ -67,7 +78,7 @@ export default function ValueCard(props) {
 
                 <TouchableOpacity activeOpacity={1} onPress={() => flipToFront()} style={styles.customCard}>
                     <LinearGradient colors={['#9198e5', '#c50ae4']} style={{ ...styles.customCard, padding: 10, justifyContent: 'center' }}>
-                        {props.height > 300 && (<>
+                        {props.height === bigHeightThresh && (<>
                             <View style={{ flex: 10, justifyContent: 'center' }}>
                                 <Input
                                     blurOnSubmit={true}
@@ -90,14 +101,14 @@ export default function ValueCard(props) {
                             </View>
                         </>)}
 
-                        {props.height <= 300 && <Text style={styles.backTextSmall}>{props.card.back}</Text>}
+                        {props.height < bigHeightThresh && <Text style={styles.backTextSmall}>{props.card.back}</Text>}
                     </LinearGradient>
                 </TouchableOpacity>
             </CardFlip>
         );
     else
         return (
-            <CardFlip style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
+            <CardFlip onFlip={logFlip} style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
                     <Svg width={props.width} height={props.height} onLongPress={props.onLongPress} viewBox={`0 0 ${props.width} ${props.height}`} style={{ ...props.style, borderRadius: props.borderRadius ?? 15, overflow: 'hidden' }}>
                         <Image href={props.card.front} width={props.width} height={props.height} />

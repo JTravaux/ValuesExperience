@@ -20,7 +20,10 @@ export default function App(props) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    Amplitude.initialize("178c6b0fda8b1cff768ddff3f0b87af3")
+    
+    // Initialize analytics if not dev
+    if(!__DEV__)
+      Amplitude.initialize("178c6b0fda8b1cff768ddff3f0b87af3")
 
     async function loadResourcesAsync() {
       try {

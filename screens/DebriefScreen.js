@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView, Dimensions} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ValueCard from '../components/ValueCard';
 import { colors, font } from '../constants/Styles';
@@ -8,6 +8,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Multisetp from '../components/MultiStep'
 import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
+
+const cardHeight = Dimensions.get('screen').height / 3.5;
+const cardWidth = Dimensions.get('screen').width / 2.75;
 
 export default function DebriefScreen({ navigation, route }) {
   const insets = useSafeArea();
@@ -33,7 +36,7 @@ export default function DebriefScreen({ navigation, route }) {
             </View>
 
             <View style={{margin: 5, flexDirection: 'row', justifyContent: 'space-evenly'}}>
-              {route.params?.chosenOnes.map(chosenCard => <ValueCard width={160} height={225} card={chosenCard} key={"card_" + chosenCard.id} shadowOpacity={0.86} borderRadius={20}/>)}
+              {route.params?.chosenOnes.map(chosenCard => <ValueCard width={cardWidth} height={cardHeight} card={chosenCard} key={"card_" + chosenCard.id} shadowOpacity={0.86} borderRadius={20}/>)}
             </View>
 
             <Multisetp 
@@ -68,7 +71,7 @@ const ReflectionQuestion = props =>
         icon={props.currentStep !== props.totalSteps ? 
           <Icon name="arrow-circle-right" size={50} color="#FFFFFF" /> 
         : 
-          <Icon name="check-circle" size={50} color="#81D093" onPress={() => props.navigation.navigate('end', { chosenOnes: props.route.params?.chosenOnes.map(c => c.name) })} />
+          <Icon name="check-circle" size={50} color="#81D093" onPress={() => props.navigation.navigate('end', { chosenOnes: props.route.params?.chosenOnes.map(c => c.custom ? c.front : c.name) })} />
         } 
       />
   </View>
