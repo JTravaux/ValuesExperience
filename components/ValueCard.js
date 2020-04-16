@@ -68,11 +68,7 @@ export default function ValueCard(props) {
                             <Text style={styles.how}>Tap the title to customize</Text>
                         </>)}
 
-                        {props.height < bigHeightThresh && <Text style={{
-                            ...styles.frontTextSmall, 
-                            fontSize: props.card.front.length > 7 ? 12 : 20,
-                            lineHeight: props.card.front.length > 7 ? 15 : 30,
-                        }}>{props.card.front}</Text>}
+                        {props.height < bigHeightThresh && <Text adjustsFontSizeToFit style={styles.frontTextSmall}>{props.card.front}</Text>}
                     </LinearGradient>
                 </TouchableOpacity>
 
@@ -84,7 +80,7 @@ export default function ValueCard(props) {
                                     blurOnSubmit={true}
                                     multiline
                                     inputStyle={styles.backText}
-                                    inputContainerStyle={{ borderBottomWidth: 0 }} 
+                                    inputContainerStyle={styles.textFieldContainer} 
                                     placeholderTextColor={color}
                                     placeholder="Don't see any values that resonate with you? Feel free to use this card to add a custom value."
                                     value={customBack}
@@ -145,18 +141,20 @@ const styles = StyleSheet.create({
         borderRadius: 15
     },
     frontText: {
-        fontSize: 38,
-        lineHeight: 30,
+        padding: 5,
+        fontSize: 35,
+        lineHeight: 35,
         textAlign: 'center',
         color: colors.fontColor,
         fontFamily: font.card
     },
     backText: {
+        padding: 5,
         fontSize: 23,
-        lineHeight: 20,
+        lineHeight: 23,
         textAlign: 'center',
         color: colors.fontColor,
-        fontFamily: font.card
+        fontFamily: font.card,
     },
     how: {
         fontFamily: font.light,
@@ -168,13 +166,17 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0
     },
     frontTextSmall: {
+        padding: 3,
+        fontSize: 20,
+        lineHeight: 20,
         textAlign: 'center',
         color: colors.fontColor,
-        fontFamily: font.card  
+        fontFamily: font.card,
     },
     backTextSmall: {
-        fontSize: 13,
-        lineHeight: 20,
+        padding: 3,
+        fontSize: 14,
+        lineHeight: 14,
         textAlign: 'center',
         color: colors.fontColor,
         fontFamily: font.card
