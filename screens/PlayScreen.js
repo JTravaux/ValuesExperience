@@ -391,13 +391,13 @@ export default function PlayScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.screenBgColor
+        backgroundColor: colors.screenBgColors
     },
     screenTitle: {
         flex: 10, 
         backgroundColor: 'rgba(0,0,0,0.1)', 
         borderRadius: 10, 
-        height: '100%', 
+        height: 50,
         justifyContent: 'center'
     },
     myValuesTitle: {
