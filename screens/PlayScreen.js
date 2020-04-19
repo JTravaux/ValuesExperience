@@ -18,9 +18,9 @@ import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('screen');
 const bigCardHeight = height / 2;
-const bigCardWidth = width / 1.6;
+const bigCardWidth = width / 1.35;
 const smallCardHeight = height / 4.5;
-const smallCardWidth = width / 3.55;
+const smallCardWidth = width / 3.35;
 const title = "Values Experience"
 
 export default function PlayScreen({ navigation }) {
@@ -354,7 +354,7 @@ export default function PlayScreen({ navigation }) {
                             data={myValues}
                             ref={keepScroller}
                             showsHorizontalScrollIndicator={false}
-                            style={{ height: smallCardHeight + 15}}
+                            style={{ height: smallCardHeight + 10}}
                             keyExtractor={item => "my_stack_" + item.id}
                             scrollEnabled={myValues.length > 3 && scrollEnabled}
                             onContentSizeChange={() => keepScroller.current.scrollToEnd({animated: true})}

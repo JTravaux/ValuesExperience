@@ -1,7 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions, Image} from 'react-native';
 import CardFlip from 'react-native-card-flip';
-import Svg, { Image } from 'react-native-svg'
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, font } from '../constants/Styles';
 import { Input } from 'react-native-elements';
@@ -106,15 +105,11 @@ export default function ValueCard(props) {
         return (
             <CardFlip onFlip={logFlip} style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
-                    <Svg width={props.width} height={props.height} onLongPress={props.onLongPress} viewBox={`0 0 ${props.width} ${props.height}`} style={{ ...props.style, borderRadius: props.borderRadius ?? 15, overflow: 'hidden' }}>
-                        <Image href={props.card.front} width={props.width} height={props.height} />
-                    </Svg>
+                    <Image source={{uri: props.card.front}} style={{width: props.width, height: props.height, borderRadius: props.borderRadius ?? 15}}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
-                    <Svg width={props.width} height={props.height} onLongPress={props.onLongPress} viewBox={`0 0 ${props.width} ${props.height}`} style={{ ...props.style, borderRadius: props.borderRadius ?? 15, overflow: 'hidden' }}>
-                        <Image href={props.card.back} width={props.width} height={props.height} />
-                    </Svg>
+                    <Image source={{uri: props.card.back}} style={{width: props.width, height: props.height, borderRadius: props.borderRadius ?? 15}}/>
                 </TouchableOpacity>
             </CardFlip>
         );
