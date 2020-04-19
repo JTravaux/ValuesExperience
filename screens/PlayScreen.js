@@ -18,9 +18,9 @@ import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('screen');
 const bigCardHeight = height / 2;
-const bigCardWidth = width / 1.35;
+const bigCardWidth = width / 1.5;
 const smallCardHeight = height / 4.5;
-const smallCardWidth = width / 3.35;
+const smallCardWidth = width / 3.5;
 const title = "Values Experience"
 
 export default function PlayScreen({ navigation }) {
