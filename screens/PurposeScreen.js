@@ -7,7 +7,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
 // For development only, will be moved eventually
-const VERSION = "Alpha: 0.0.3";
+const VERSION = "Alpha: 0.0.4";
 
 const backgroundText = [
     "Values are your personal standards of behavior and what you hold dear. These are applied equally across all facets of your life and heavily impact your experiences.",
