@@ -35,12 +35,11 @@ export default function EndScreen({ route: { params } }) {
         if (rating === idx) {
             setRating(-1)
             setFeedbackTitle("How was your values experience?")
-            Amplitude.logEvent("Cleared Feedback")
         }
         else {
             setRating(idx)
             setFeedbackTitle("Thank you for your feedback!")
-            Amplitude.logEventWithProperties("Left Feedback", { rating })
+            Amplitude.logEventWithProperties("Left Feedback", { rating: idx })
         }
     }
 
