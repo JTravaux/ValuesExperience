@@ -439,11 +439,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     title: {
-        flex: 1,
+        flex: 1/2,
         alignItems: 'center',
         flexDirection: 'row',
-        paddingRight: 10,
-        paddingLeft: 10,
+        padding: 10,
         backgroundColor: "#0883BF"
     },
     titleText: {
