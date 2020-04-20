@@ -16,9 +16,9 @@ export default function DebriefScreen({ navigation, route }) {
   const insets = useSafeArea();
 
   const allSteps = [
-    { name: "Question 1", component: props => <ReflectionQuestion question={`What do I need to change to be truly living my values? Do I have any "slippery behaviours" that I exhibit but run counter to my values?`} {...props} /> },
-    { name: "Question 2", component: props => <ReflectionQuestion question="What does it look like when I am at my best?" {...props} /> },
-    { name: "Question 3", component: props => <ReflectionQuestion question="What is one behaviour that supports my values?" {...props} navigation={navigation} route={route}/> },
+    { name: "Question 1", component: props => <ReflectionQuestion question="Am I currently living my values?" {...props} /> },
+    { name: "Question 2", component: props => <ReflectionQuestion question="How do I show up when I am at my best?" {...props} /> },
+    { name: "Question 3", component: props => <ReflectionQuestion question="What behaviours are currently supporting or not supporting my values?" {...props} navigation={navigation} route={route}/> },
   ];
 
   React.useEffect(() => {

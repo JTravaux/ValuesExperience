@@ -53,7 +53,6 @@ export default function PlayScreen({ navigation }) {
         else if (goal.id === 2) 
             Amplitude.logEvent("Visited Phase 3")
 
-        setGoalModalOpen(true)
     }, [goal])
 
     const editCustom = (id, side, text) => {
@@ -115,14 +114,14 @@ export default function PlayScreen({ navigation }) {
 
             setGoal(goals[goal.id + 1])
             setGoals(updateGoals)
+            setValues([])
 
             Amplitude.logEventWithProperties(`Phase ${goal.id + 1} Completion`, {cards: keep.map(c => c.name).join(', ')})
             
             setTimeout(() => { 
                 setDeck(keep)
-                setValues([])
                 setLoading(false)
-            }, 300)
+            }, 500)
         }
     }
 
@@ -262,7 +261,7 @@ export default function PlayScreen({ navigation }) {
         return (
             <Text style={{ 
                 textAlign: 'right',
-                color: colors.fontColor, 
+                color: myValues.length === 0 ? "#0883BF" : colors.fontColor, 
                 fontFamily: font.bold, 
                 fontSize: 17, 
                 marginRight: 20 
@@ -291,8 +290,8 @@ export default function PlayScreen({ navigation }) {
                         <View style={styles.menu}>
                             <TouchableOpacity onPress={() => setMenuOpen(true)}>
                                 <Menu visible={menuOpen} onDismiss={() => setMenuOpen(false)} anchor={<Icon name="bars" size={25} color="#FFFFFF" />}>
-                                    <Menu.Item onPress={openGoalInstructions} title="View Activity Goals" />
-                                    <Menu.Item onPress={openGameInstructions} title="View Instructions" />
+                                    <Menu.Item onPress={openGoalInstructions} title="Step Instructions" />
+                                    <Menu.Item onPress={openGameInstructions} title="Overall Instructions" />
                                     <Divider />
                                     <Menu.Item onPress={restartExperience} title="Restart Experience" />
                                 </Menu>
@@ -342,41 +341,55 @@ export default function PlayScreen({ navigation }) {
                     <View style={styles.pileTitle}>
                         <View style={{ width: myValuesTitleWidth}}/>
                         <Text style={styles.myValuesTitle}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
+                        
+                      
                         <Animatable.View key={`${myValues.length}/${goal.numToKeep}`} animation="tada" onLayout={ev => setMyValuesTitleWidth(ev.nativeEvent.layout.width)}>
                             {myValues.length !== goal.numToKeep ? renderCurrentCounts() : renderNextButton()}
                         </Animatable.View>
+
                     </View>
 
                     {/* "My Values" Card Pile */}
-                    <View style={{ alignItems: goal.id === goals.length - 1 ? 'center' : 'flex-start' }}>
-                        <FlatList
-                            horizontal
-                            data={myValues}
-                            ref={keepScroller}
-                            showsHorizontalScrollIndicator={false}
-                            style={{ height: smallCardHeight + 10}}
-                            keyExtractor={item => "my_stack_" + item.id}
-                            scrollEnabled={myValues.length > 3 && scrollEnabled}
-                            onContentSizeChange={() => keepScroller.current.scrollToEnd({animated: true})}
-                            renderItem={({item}) => (
-                                <CardStack
-                                    verticalThreshold={50}
-                                    disableLeftSwipe={true}
-                                    horizontalSwipe={false}
-                                    disableRightSwipe={true}
-                                    disableBottomSwipe={true}
-                                    style={styles.myValuesStack}
-                                    onSwipe={() =>  setScrollEnabled(false)}
-                                    onSwipeEnd={() => setScrollEnabled(true)}
-                                    onSwipedTop={() => removeFromValues(item.id)}
-                                    renderNoMoreCards={() => <View style={{ width: 110 }} />}
-                                >
-                                    <Animatable.View duration={500} animation='bounceIn' easing="linear">
-                                        <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20}/>
-                                    </Animatable.View>
-                                </CardStack>
-                            )}
-                        />
+                    <View style={{ flex: 1, alignItems: (goal.id === goals.length - 1 || myValues.length === 0) ? 'center' : 'flex-start'}}>
+
+                        {/* Empty Pile */}
+                        {myValues.length === 0 && (
+                            <View style={{ flex: 1, justifyContent: 'center', margin: 10}}>
+                                <Animatable.Text animation="tada" style={styles.myValuesInstruction}>{goal.shortInstruction}</Animatable.Text>
+                            </View>
+                        )}
+
+                        {/* Non Empty Pile */}
+                        {myValues.length > 0 && (
+                            <FlatList
+                                horizontal
+                                data={myValues}
+                                ref={keepScroller}
+                                showsHorizontalScrollIndicator={false}
+                                style={{ height: smallCardHeight + 10 }}
+                                keyExtractor={item => "my_stack_" + item.id}
+                                scrollEnabled={myValues.length > 3 && scrollEnabled}
+                                onContentSizeChange={() => keepScroller.current.scrollToEnd({ animated: true })}
+                                renderItem={({ item }) => (
+                                    <CardStack
+                                        verticalThreshold={50}
+                                        disableLeftSwipe={true}
+                                        horizontalSwipe={false}
+                                        disableRightSwipe={true}
+                                        disableBottomSwipe={true}
+                                        style={styles.myValuesStack}
+                                        onSwipe={() => setScrollEnabled(false)}
+                                        onSwipeEnd={() => setScrollEnabled(true)}
+                                        onSwipedTop={() => removeFromValues(item.id)}
+                                        renderNoMoreCards={() => <View style={{ width: 110 }} />}
+                                    >
+                                        <Animatable.View duration={500} animation='bounceIn' easing="linear">
+                                            <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
+                                        </Animatable.View>
+                                    </CardStack>
+                                )}
+                            />
+                        )}
                     </View>
                 </View>
 
@@ -404,8 +417,7 @@ const styles = StyleSheet.create({
         textAlign: 'center', 
         color: colors.fontColor, 
         fontFamily: font.bold, 
-        fontSize: 20, 
-        marginLeft: 20
+        fontSize: 20
     },
     myValuesStack: {
         alignItems: 'center', 
@@ -446,6 +458,12 @@ const styles = StyleSheet.create({
         margin: 5,
         marginBottom: 0,
         backgroundColor: 'transparent'
+    },
+    myValuesInstruction: {
+        fontSize: 16,
+        fontFamily: font.regular,
+        color: colors.fontColor,
+        textAlign: 'center'
     },
     mainPile: {
         flex: 4,

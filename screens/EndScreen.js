@@ -60,11 +60,18 @@ export default function EndScreen({ route: { params } }) {
                 
                 {/* Main Content */}
                 <View style={styles.contentStart}>
-                    <Text style={styles.textStyle}>
-                        Consider the actions I need to take in my life to live the values of
+                    <View style={{ flex: 1, marginTop: 10 }}>
+                        <Text style={styles.titleStyle}>Action</Text>
+                    </View>
+
+                    <View style={{flex: 1.5}}>
+                        <Text style={styles.textStyle}>
+                            What do I need to do today to ensure alignment of my values of
                         <Text style={{ fontFamily: font.bold }}>{` ${params.chosenOnes[0]} `}</Text>and
-                        <Text style={{ fontFamily: font.bold }}>{` ${params.chosenOnes[1]}`}</Text>.
+                        <Text style={{ fontFamily: font.bold }}>{` ${params.chosenOnes[1]}`}</Text>?
                     </Text>
+                    </View>
+                
                 </View>
 
                 {/* Feedback */}
@@ -128,6 +135,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
     },
+    titleStyle: {
+        fontFamily: font.semibold,
+        fontSize: 40,
+        color: colors.fontColor,
+        textAlign: 'center'
+    },
     feedbackInputLabel: {
         color: colors.fontColor, 
         fontFamily: font.regular
@@ -169,14 +182,15 @@ const styles = StyleSheet.create({
         flex: 1,
         borderWidth: 4,
         borderColor: '#FFFFFF',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingLeft: 10,
+        paddingRight: 10
     },
     textStyle: {
         fontFamily: font.light,
         fontSize: 30,
         color: colors.fontColor,
-        textAlign: 'center',
-        textAlignVertical: 'center'
+        textAlign: 'center'
     },
     gradient: {
         flex: 1,

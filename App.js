@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import PurposeScreen from "./screens/PurposeScreen";
-import InstructionScreen from "./screens/InstructionScreen"
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
@@ -52,7 +51,6 @@ export default function App(props) {
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Purpose" headerMode="screen">
             <Stack.Screen name='purpose' component={PurposeScreen} options={{ headerShown: false }} />
-            <Stack.Screen name='instructions' component={InstructionScreen} options={{ headerShown: false }} />
             <Stack.Screen name='play' component={PlayScreen} options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name='debrief' component={DebriefScreen} options={{ headerShown: false }} />
             <Stack.Screen name='end' component={EndScreen} options={{ headerShown: false }} />
