@@ -7,7 +7,7 @@
     "platforms": ["ios","android","web"],
     "version": "0.0.5",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/1024.png",
     "scheme": "myapp",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -22,7 +22,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rightbrainteams.valuesexperience"
+      "bundleIdentifier": "com.rightbrainteams.valuesexperience",
+      "buildNumber": "0.0.5"
     }
   }
 }
