@@ -406,7 +406,6 @@ const styles = StyleSheet.create({
     },
     screenTitle: {
         flex: 10, 
-        backgroundColor: 'rgba(0,0,0,0.1)', 
         borderRadius: 10, 
         height: 50,
         justifyContent: 'center'
