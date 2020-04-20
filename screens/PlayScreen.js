@@ -274,30 +274,28 @@ export default function PlayScreen({ navigation }) {
     return (
         <Provider>
             <View style={styles.container}>
-                <View style={styles.title}>
-                    <LinearGradient colors={['rgba(8, 131, 191, 0.90)', 'rgba(8, 131, 191, 0.80)']} style={{...styles.gradient, paddingTop: insets.top + 5, paddingBottom: insets.top + 5}}>
-                        <View style={{ flex: 1, alignItems: 'flex-start' }}>
-                            <TouchableOpacity onPress={goBack}>
-                                <Icon  name="arrow-left" size={25} color="#FFFFFF" />
-                            </TouchableOpacity>
-                        </View>
+                <View style={{ ...styles.title, paddingTop: insets.top + 5, paddingBottom: insets.top + 5}}>
+                    <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                        <TouchableOpacity onPress={goBack}>
+                            <Icon  name="arrow-left" size={25} color="#FFFFFF" />
+                        </TouchableOpacity>
+                    </View>
 
-                        <View style={styles.screenTitle}>
-                            <Text style={styles.titleText}>{title}</Text>
-                        </View>
+                    <View style={styles.screenTitle}>
+                        <Text style={styles.titleText}>{title}</Text>
+                    </View>
 
-                        {/* Menu */}
-                        <View style={styles.menu}>
-                            <TouchableOpacity onPress={() => setMenuOpen(true)}>
-                                <Menu visible={menuOpen} onDismiss={() => setMenuOpen(false)} anchor={<Icon name="bars" size={25} color="#FFFFFF" />}>
-                                    <Menu.Item onPress={openGoalInstructions} title="Step Instructions" />
-                                    <Menu.Item onPress={openGameInstructions} title="Overall Instructions" />
-                                    <Divider />
-                                    <Menu.Item onPress={restartExperience} title="Restart Experience" />
-                                </Menu>
-                            </TouchableOpacity>
-                        </View>
-                    </LinearGradient>
+                    {/* Menu */}
+                    <View style={styles.menu}>
+                        <TouchableOpacity onPress={() => setMenuOpen(true)}>
+                            <Menu visible={menuOpen} onDismiss={() => setMenuOpen(false)} anchor={<Icon name="bars" size={25} color="#FFFFFF" />}>
+                                <Menu.Item onPress={openGoalInstructions} title="Step Instructions" />
+                                <Menu.Item onPress={openGameInstructions} title="Overall Instructions" />
+                                <Divider />
+                                <Menu.Item onPress={restartExperience} title="Restart Experience" />
+                            </Menu>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* The Main deck in the middle */}
@@ -443,7 +441,11 @@ const styles = StyleSheet.create({
     },
     title: {
         flex: 1,
-        flexDirection: 'row'
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingRight: 10,
+        paddingLeft: 10,
+        backgroundColor: "#0883BF"
     },
     titleText: {
         color: colors.fontColor,
@@ -466,11 +468,11 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     mainPile: {
-        flex: 4,
+        flex: 8,
         backgroundColor: '#8CC9E6'
     },
     myValues: {
-        flex: 2,
+        flex: 4,
         position: 'relative',
         backgroundColor: '#0883BF',
         zIndex: -1

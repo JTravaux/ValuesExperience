@@ -13,7 +13,7 @@ export const phases = [
         totalCards: 22,
         myValues: [],
         remainingDeck: [],
-        shortInstruction: "Review the value cards and slide the top 10 that resonate the most with you to this area.",
+        shortInstruction: "Review the value cards and swipe down into this area the values that resonate the most.",
         instructions: [
             `There are hundreds of values but on the screen are 22 common ones. We invite you now to review these plus any you want to add and identify 10 that resonate most with you by sliding them down into the "My Values" area.`,
             `Once you have filled the "My Values" area you can continue to the next step.`
