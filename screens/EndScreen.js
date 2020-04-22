@@ -1,14 +1,14 @@
 //Emoji's from: https://unicode.org/emoji/charts/full-emoji-list.html
 
 import * as React from 'react';
-import { StyleSheet, Text, View, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Keyboard, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, font } from '../constants/Styles';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as Animatable from 'react-native-animatable';
-import { Input, CheckBox  } from 'react-native-elements';
+import { Input, CheckBox, Button  } from 'react-native-elements';
 import Modal, {ModalContent, SlideAnimation } from 'react-native-modals';
 
 export default function EndScreen({ route: { params } }) {
@@ -18,7 +18,11 @@ export default function EndScreen({ route: { params } }) {
     const [showEmail, setShowEmail] = React.useState(false)
     const [feedbackTitle, setFeedbackTitle] = React.useState("How was your values experience?")
     const [moreToSayTitle, setMoreToSayTitle] = React.useState("Have more to say?")
+    const [feedback, setFeedback] = React.useState("")
+    const [email, setEmail] = React.useState("")
+    const [errMsg, setErrMsg] = React.useState("Test")
     const [moreToSay, setMoreToSay] = React.useState(false)
+    const [moreToSayDone, setMoreToSayDone] = React.useState(false)
     const [animate, setAnimate] = React.useState(true)
 
     React.useEffect(() => {
@@ -69,6 +73,24 @@ export default function EndScreen({ route: { params } }) {
         }
     }
 
+    const submitFeedbackResponse = () => {
+        setErrMsg("")
+        if (feedback.length === 0) {
+            setErrMsg("Your feedback is empty.")
+            return;
+        }
+        if(showEmail && email.length === 0) {
+            setErrMsg("Please enter your email address.")
+            return;
+        }
+
+        Amplitude.logEventWithProperties("Left Feedback Expanded", { feedback, email }).then(val => {
+            setMoreToSayTitle("Your feedback has been sent.")
+            setMoreToSayDone(true)
+            setMoreToSay(false)
+        })
+    }
+
     return (
         <View style={styles.container}>
             <LinearGradient colors={['rgba(8, 131, 191, 1)', 'rgba(8, 131, 191, 0.65)']} style={{ ...styles.gradient, paddingTop: insets.top + 5, paddingBottom: insets.top + 5 }}>
@@ -91,13 +113,13 @@ export default function EndScreen({ route: { params } }) {
 
                 {/* Feedback */}
                 <Text style={styles.feedbackTitle}>{feedbackTitle}</Text>
-                {/* {rating !== -1 && (
+                {rating !== -1 && Platform.OS === 'ios' && (
                     <Animatable.View useNativeDriver animation="zoomIn" easing="ease-in-sine" duration={200}>
-                        <TouchableOpacity onPress={() => setMoreToSay(true)}>
+                        <TouchableOpacity onPress={() => moreToSayDone ? null : setMoreToSay(true)}>
                             <Text style={styles.moreToSay}>{moreToSayTitle}</Text>
                         </TouchableOpacity>
                     </Animatable.View>
-                )} */}
+                )}
 
                 {rating === -1 && (
                     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: 5 }}>
@@ -118,7 +140,7 @@ export default function EndScreen({ route: { params } }) {
             </LinearGradient>
 
             <Modal.BottomModal
-                height={0.8}
+                height={0.9}
                 visible={moreToSay}
                 overlayOpacity={0.85}
                 swipeThreshold={100}
@@ -128,25 +150,65 @@ export default function EndScreen({ route: { params } }) {
             >
                 <Text style={{ fontFamily: font.bold, color: colors.fontColor, fontSize: 25, textAlign: 'center', backgroundColor: '#0883BF', paddingTop: 5 }}>Send us your Feedback</Text>
                 <ModalContent style={{ backgroundColor: '#0883BF', height: '95%', justifyContent: 'space-between' }}>
-                    <Input 
-                        blurOnSubmit={true}
-                        returnKeyType="go"
-                        label="Feedback" 
-                        containerStyle={styles.feedbackContainer}
-                        labelStyle={styles.feedbackInputLabel} 
-                        inputContainerStyle={styles.feedbackInputContainer}
-                        // inputStyle={{color: colors.fontColor}}
-                        multiline 
-                        placeholder='Enter your feedback...' 
-                        maxLength={256}
-                        numberOfLines={3}
-                    />
-                    <CheckBox
-                        title='I would like to discuss this feedback.'
-                        checked={showEmail}
-                        onPress={() => setShowEmail(!showEmail)}
-                    />
-                    <Text style={{ textAlign: 'center', fontFamily: font.light, color: colors.fontColor, paddingBottom: insets.bottom + 10 }}>(swipe down to dismiss)</Text>
+                    <View>
+                        <Input
+                            blurOnSubmit={true}
+                            returnKeyType="go"
+                            label="Feedback"
+                            containerStyle={styles.feedbackContainer}
+                            labelStyle={styles.feedbackInputLabel}
+                            inputContainerStyle={styles.feedbackInputContainer}
+                            inputStyle={{color: '#FFFFFF'}}
+                            multiline
+                            placeholder='Enter your feedback'
+                            maxLength={256}
+                            numberOfLines={3}
+                            value={feedback}
+                            onChangeText={text => {
+                                setErrMsg("")
+                                setFeedback(text)
+                            }}
+                        />
+                      
+                        {showEmail && (
+                            <Input
+                                blurOnSubmit={true}
+                                returnKeyType="go"
+                                keyboardType="email-address"
+                                label="Email Address"
+                                containerStyle={styles.feedbackContainer}
+                                labelStyle={styles.feedbackInputLabel}
+                                inputContainerStyle={styles.feedbackInputContainer}
+                                inputStyle={{ color: '#FFFFFF' }}
+                                placeholder='Enter your email address'
+                                value={email}
+                                onChangeText={text =>{
+                                    setErrMsg("")
+                                    setEmail(text)
+                                }}
+                            />
+                        )}
+                    </View>
+                  
+                    <View>
+                        <CheckBox
+                            center
+                            title='I would like to discuss this feedback.'
+                            checked={showEmail}
+                            checkedColor="white"
+                            uncheckedColor="white"
+                            containerStyle={{ backgroundColor: 'transparent', borderWidth: 0}}
+                            textStyle={{ color: '#FFFFFF' }}
+                            onPress={() => {
+                                setErrMsg("")
+                                setShowEmail(!showEmail)
+                            }}
+                        />
+                        <Button title="Submit" containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} onPress={submitFeedbackResponse}/>
+                        <Text style={{ textAlign: 'center', fontFamily: font.regular, color: '#DC0000', paddingBottom: 20 }}>{errMsg}</Text>
+                        <Text style={{ textAlign: 'center', fontFamily: font.light, color: colors.fontColor, paddingBottom: insets.bottom + 10 }}>(swipe down to dismiss)</Text>
+                    </View>
+                  
                 </ModalContent>
             </Modal.BottomModal>
         </View>
@@ -166,16 +228,15 @@ const styles = StyleSheet.create({
     },
     feedbackInputLabel: {
         color: colors.fontColor, 
-        fontFamily: font.regular
+        fontFamily: font.bold,
     },
     feedbackContainer: {
         borderColor: colors.fontColor,
-        borderWidth: 1, 
+        borderWidth: 0, 
         padding: 5
     },
     feedbackInputContainer: {
-        borderBottomWidth: 0,
-        color: colors.fontColor
+        borderBottomWidth: 0
     },  
     emoji_on: {
         fontSize: 30,
@@ -219,5 +280,20 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingRight: 15, 
         paddingLeft: 15,
+    },
+    buttonStyle: {
+        borderRadius: 25,
+        backgroundColor: colors.mainBtnColor
+    },
+    btnContainer: {
+        width: '85%',
+        marginBottom: 20,
+        alignSelf: 'center',
+        borderWidth: 1,
+        borderColor: '#FFF'
+    },
+    btnText: {
+        fontFamily: font.semibold,
+        fontSize: 20
     }
 });

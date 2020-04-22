@@ -4,12 +4,11 @@ import { Button } from 'react-native-elements';
 import ValueCard from '../components/ValueCard';
 import { colors, font } from '../constants/Styles';
 import SlideOverlay from '../components/SlideOverlay';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import CardStack from '../components/CardStack';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { StyleSheet, Text, View, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Dimensions, Platform } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import {  Menu, Divider, Provider } from 'react-native-paper';
 import { game_instructions, phases } from '../Instructions';
@@ -18,9 +17,9 @@ import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('screen');
 const bigCardHeight = height / 2;
-const bigCardWidth = width / 1.5;
+const bigCardWidth = width / 1.59;
 const smallCardHeight = height / 4.5;
-const smallCardWidth = width / 3.5;
+const smallCardWidth = width / 3.6;
 const title = "Values Experience"
 
 export default function PlayScreen({ navigation }) {
@@ -301,33 +300,65 @@ export default function PlayScreen({ navigation }) {
                 {/* The Main deck in the middle */}
                 <View style={styles.mainPile}>
                     {!loading && deck && (
-                        <Animatable.View collapsable={true} animation="bounceInDown" duration={1000} style={styles.content} key="mainPileDeck">
-                            <CardStack
-                                duration={130}
-                                key={deck.length}
-                                secondCardZoom={0.85}
-                                style={styles.content}
-                                onSwipedAll={onSwipeAll}
-                                onSwipedBottom={addToMyValues}
-                                verticalThreshold={height / 4}
-                                horizontalThreshold={width / 4}
-                                renderNoMoreCards={() => <View />}
-                                loop={removeTemp.length === 0 && addTemp.length === 0}
-                                disableBottomSwipe={myValues.length === goal.numToKeep}
-                            >
-                                {deck.map(card =>
-                                    <ValueCard
-                                        card={card}
-                                        borderRadius={20}
-                                        edit={editCustom}
-                                        shadowOpacity={0.85}
-                                        width={bigCardWidth}
-                                        height={bigCardHeight}
-                                        key={"card_" + card.id}
-                                    />
-                                )}
-                            </CardStack>
-                        </Animatable.View>
+                        Platform.OS === 'ios' ? (
+                            // IOS Version with animation
+                            <Animatable.View animation="bounceInDown" duration={1000} style={styles.content} key="mainPileDeck">
+                                <CardStack
+                                    duration={130}
+                                    key={deck.length}
+                                    secondCardZoom={0.85}
+                                    style={styles.content}
+                                    onSwipedAll={onSwipeAll}
+                                    onSwipedBottom={addToMyValues}
+                                    verticalThreshold={height / 4}
+                                    horizontalThreshold={width / 4}
+                                    renderNoMoreCards={() => <View />}
+                                    loop={removeTemp.length === 0 && addTemp.length === 0}
+                                    disableBottomSwipe={myValues.length === goal.numToKeep}
+                                >
+                                    {deck.map(card =>
+                                        <ValueCard
+                                            card={card}
+                                            borderRadius={20}
+                                            edit={editCustom}
+                                            shadowOpacity={0.85}
+                                            width={bigCardWidth}
+                                            height={bigCardHeight}
+                                            key={"card_" + card.id}
+                                        />
+                                    )}
+                                </CardStack>
+                            </Animatable.View>
+                        ) : ( 
+                            // Android Version with no animation - Fixes Swiping
+                            <View style={styles.content} key="mainPileDeck">
+                                <CardStack
+                                    duration={130}
+                                    key={deck.length}
+                                    secondCardZoom={0.85}
+                                    style={styles.content}
+                                    onSwipedAll={onSwipeAll}
+                                    onSwipedBottom={addToMyValues}
+                                    verticalThreshold={height / 4}
+                                    horizontalThreshold={width / 4}
+                                    renderNoMoreCards={() => <View />}
+                                    loop={removeTemp.length === 0 && addTemp.length === 0}
+                                    disableBottomSwipe={myValues.length === goal.numToKeep}
+                                >
+                                    {deck.map(card =>
+                                        <ValueCard
+                                            card={card}
+                                            borderRadius={20}
+                                            edit={editCustom}
+                                            shadowOpacity={0.85}
+                                            width={bigCardWidth}
+                                            height={bigCardHeight}
+                                            key={"card_" + card.id}
+                                        />
+                                    )}
+                                </CardStack>
+                            </View> 
+                        )
                     )}
 
                     {loading && (<ActivityIndicator size="large" color="#0883BF" style={{flex: 1}} />)}

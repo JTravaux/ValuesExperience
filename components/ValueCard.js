@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions, Image} from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions, Image, Platform} from 'react-native';
 import CardFlip from 'react-native-card-flip';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, font } from '../constants/Styles';
@@ -82,13 +82,14 @@ export default function ValueCard(props) {
                                     inputContainerStyle={styles.textFieldContainer} 
                                     placeholderTextColor={color}
                                     placeholder="Don't see any values that resonate with you? Feel free to use this card to add a custom value."
-                                    value={customBack}
+                                    //value={customBack}
                                     onFocus={() => setColor("rgba(255,255,255,0.1)")}
                                     onBlur={() => setColor(colors.fontColor)}
                                     onChangeText={txt => setCustomBack(txt)}
                                     onSubmitEditing={() => props.edit(props.card.id, 'back', customBack)}
                                     returnKeyType="done"
-                                />
+                                ><Text style={{lineHeight: 300}}>{customBack}</Text>
+                                </Input>
                             </View>
 
                             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -105,11 +106,11 @@ export default function ValueCard(props) {
         return (
             <CardFlip onFlip={logFlip} style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
-                    <Image source={{ uri: props.card.front }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode="stretch"/>
+                    <Image source={{ uri: props.card.front }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode="contain"/>
                 </TouchableOpacity>
 
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
-                    <Image source={{ uri: props.card.back }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode="stretch"/>
+                    <Image source={{ uri: props.card.back }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode="contain"/>
                 </TouchableOpacity>
             </CardFlip>
         );
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     },
     frontText: {
         padding: 5,
-        fontSize: 35,
+        fontSize: Platform.OS === 'ios' ? 35 : 30,
         lineHeight: 35,
         textAlign: 'center',
         color: colors.fontColor,
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     textFieldContainer: {
-        borderBottomWidth: 0
+        borderBottomWidth: 0,
     },
     frontTextSmall: {
         padding: 3,

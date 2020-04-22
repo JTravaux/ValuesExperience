@@ -34,7 +34,7 @@ export default function PurposeScreen({navigation: { navigate } }) {
 
           <View style={styles.bottomBtns}>
             <Button onPress={() => navigate('instructions')} title="Next" raised activeOpacity={0.7} containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
-            <Text style={{ textAlign: 'center', color: '#CACACA' }}>{VERSION}</Text>
+            <Text style={{ textAlign: 'center', color: '#CACACA' }} onPress={() => navigate('end', { chosenOnes: ["Location", "Wealth"] })}>{VERSION}</Text>
           </View>
 
         </View>
