@@ -17,7 +17,7 @@ import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('screen');
 const bigCardHeight = height / 2;
-const bigCardWidth = width / 1.59;
+const bigCardWidth = width / 1.5;
 
 const smallCardHeight = Platform.OS === 'ios' ? (height / 4.5) : (height / 5);
 const smallCardWidth = width / 3.6;
