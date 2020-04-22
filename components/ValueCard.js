@@ -103,7 +103,7 @@ export default function ValueCard(props) {
         );
     else
         return (
-            <CardFlip onFlip={logFlip} style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity, backgroundColor: '#00FF00'}} ref={cardRef} flipDirection="x" duration={400} {...props}>
+            <CardFlip onFlip={logFlip} style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
                     <Image source={{ uri: props.card.front }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode={Platform.isPad ? "contain" : "stretch"}/>
                 </TouchableOpacity>
