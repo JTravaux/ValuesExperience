@@ -28,7 +28,7 @@ export default function InstructionScreen({ navigation: { navigate } }) {
                             scrollEnabled={false}
                             style={{ marginTop: 20 }}
                             data={game_instructions}
-                            renderItem={({ item }) => <Text style={styles.instructionPoint}>{`\u2022 ${item}`}</Text>}
+                            renderItem={({ item }) => <Text style={styles.instructionPoint}>{item}</Text>}
                             keyExtractor={(item, idx) => "instruction_" + idx}
                         />
                     </View>

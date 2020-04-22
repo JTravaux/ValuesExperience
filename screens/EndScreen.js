@@ -46,12 +46,27 @@ export default function EndScreen({ route: { params } }) {
     const Emoji = props => {
         return (
             <Animatable.View useNativeDriver animation={props.animation} duration={animate ? 700 : 1}>
-                <TouchableOpacity onPress={() => changeFeedback(props.value)}>
+                <TouchableOpacity onPress={() => props.readonly ? null : changeFeedback(props.value)}>
                     <Text style={props.value === rating ? styles.emoji_on : (rating === -1 ? styles.emoji_on : styles.emoji_off)}>{props.emoji}</Text>
                 </TouchableOpacity>
             </Animatable.View>
           
         )
+    }
+
+    const renderSelection = () => {
+        switch(rating){
+            case 1:
+                return "😡";
+            case 2:
+                return "😟";
+            case 3:
+                return "😐";
+            case 4:
+                return "😃";
+            case 5:
+                return "🥰";
+        }
     }
 
     return (
@@ -84,13 +99,21 @@ export default function EndScreen({ route: { params } }) {
                     </Animatable.View>
                 )} */}
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: 5 }}>
-                    <Emoji emoji="😡" value={1} animation="fadeInLeft" />
-                    <Emoji emoji="😟" value={2} animation="fadeInDown" />
-                    <Emoji emoji="😐" value={3} animation="fadeIn" />
-                    <Emoji emoji="😃" value={4} animation="fadeInDown" />
-                    <Emoji emoji="🥰" value={5} animation="fadeInRight" />
-                </View>
+                {rating === -1 && (
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: 5 }}>
+                        <Emoji emoji="😡" value={1} animation="fadeInLeft" />
+                        <Emoji emoji="😟" value={2} animation="fadeInDown" />
+                        <Emoji emoji="😐" value={3} animation="fadeIn" />
+                        <Emoji emoji="😃" value={4} animation="fadeInDown" />
+                        <Emoji emoji="🥰" value={5} animation="fadeInRight" />
+                    </View>
+                )}
+
+                {rating !== -1 && (
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: 5 }}>
+                        <Emoji emoji={renderSelection()} readonly/>
+                    </View>
+                )}
 
             </LinearGradient>
 
