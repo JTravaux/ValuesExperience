@@ -81,15 +81,14 @@ export default function ValueCard(props) {
                                     inputStyle={styles.backText}
                                     inputContainerStyle={styles.textFieldContainer} 
                                     placeholderTextColor={color}
-                                    placeholder="Don't see any values that resonate with you? Feel free to use this card to add a custom value."
-                                    //value={customBack}
+                                    placeholder={Platform.OS === 'ios' ? "Don't see any values that resonate with you? Feel free to use this card to add a custom value." : "Your description..."}
+                                    value={customBack}
                                     onFocus={() => setColor("rgba(255,255,255,0.1)")}
                                     onBlur={() => setColor(colors.fontColor)}
                                     onChangeText={txt => setCustomBack(txt)}
                                     onSubmitEditing={() => props.edit(props.card.id, 'back', customBack)}
                                     returnKeyType="done"
-                                ><Text style={{lineHeight: 300}}>{customBack}</Text>
-                                </Input>
+                                />
                             </View>
 
                             <View style={{ flex: 1, justifyContent: 'flex-end' }}>

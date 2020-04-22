@@ -2,10 +2,10 @@
   "expo": {
     "name": "Values Experience",
     "slug": "ValuesExperience",
-    "description": "Welcome to the Values Experience! This is the alpha version of the experience. Expect some bugs, please document and report any you encounter.\nVersion: 0.0.7",
+    "description": "Welcome to the Values Experience! This is the alpha version of the experience. Expect some bugs, please document and report any you encounter.\nVersion: 0.0.8",
     "privacy": "unlisted",
     "platforms": ["ios","android","web"],
-    "version": "0.0.7",
+    "version": "0.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/1024.png",
     "scheme": "myapp",
@@ -23,7 +23,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rightbrainteams.valuesexperience",
-      "buildNumber": "0.0.7"
+      "buildNumber": "0.0.8"
     }
   }
 }

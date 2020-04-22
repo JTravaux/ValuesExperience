@@ -18,7 +18,8 @@ import Constants from 'expo-constants';
 const { width, height } = Dimensions.get('screen');
 const bigCardHeight = height / 2;
 const bigCardWidth = width / 1.59;
-const smallCardHeight = height / 4.5;
+
+const smallCardHeight = Platform.OS === 'ios' ? (height / 4.5) : (height / 5);
 const smallCardWidth = width / 3.6;
 const title = "Values Experience"
 
@@ -412,9 +413,9 @@ export default function PlayScreen({ navigation }) {
                                         onSwipedTop={() => removeFromValues(item.id)}
                                         renderNoMoreCards={() => <View style={{ width: 110 }} />}
                                     >
-                                        <Animatable.View duration={500} animation='bounceIn' easing="linear">
+                                        <View duration={500} animation='bounceIn' easing="linear">
                                             <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
-                                        </Animatable.View>
+                                        </View>
                                     </CardStack>
                                 )}
                             />

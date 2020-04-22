@@ -7,7 +7,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
 // For development only, will be moved eventually
-const VERSION = "Alpha: 0.0.7";
+const VERSION = "Alpha: 0.0.8";
 
 const backgroundText = [
   "Values motivate and guide us to behave at our best.",
@@ -34,7 +34,7 @@ export default function PurposeScreen({navigation: { navigate } }) {
 
           <View style={styles.bottomBtns}>
             <Button onPress={() => navigate('instructions')} title="Next" raised activeOpacity={0.7} containerStyle={styles.btnContainer} buttonStyle={styles.buttonStyle} titleStyle={styles.btnText} />
-            <Text style={{ textAlign: 'center', color: '#CACACA' }} onPress={() => navigate('end', { chosenOnes: ["Location", "Wealth"] })}>{VERSION}</Text>
+            <Text style={{ textAlign: 'center', color: '#CACACA' }}>{VERSION}</Text>
           </View>
 
         </View>
