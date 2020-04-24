@@ -416,9 +416,9 @@ export default function PlayScreen({ navigation }) {
                                         onSwipedTop={() => removeFromValues(item.id)}
                                         renderNoMoreCards={() => <View style={{ width: 110 }} />}
                                     >
-                                        <View duration={500} animation='bounceIn' easing="linear">
+                                        <Animatable.View duration={500} animation='bounceIn' easing="linear">
                                             <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
-                                        </View>
+                                        </Animatable.View>
                                     </CardStack>
                                 )}
                             />
