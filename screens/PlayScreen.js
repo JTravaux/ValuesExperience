@@ -205,6 +205,9 @@ export default function PlayScreen({ navigation }) {
         const removed = myDeck.splice(myDeck.findIndex(card => card.id === id), 1)[0]
         setValues(myDeck)
 
+        if(removed.custom)
+            processRemoveTemp(deck);
+            
         // Check if the card is already in the deck
         if (removeTemp.findIndex(c => c.id === removed.id) !== -1) {
             let temp = [...removeTemp]
