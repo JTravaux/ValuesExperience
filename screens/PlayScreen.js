@@ -17,10 +17,10 @@ import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('screen');
 const bigCardHeight = height / 2;
-const bigCardWidth = width / 1.5;
+const bigCardWidth = Platform.isPad ? (width / 2.2) : (width / 1.5);
 
-const smallCardHeight = Platform.OS === 'ios' ? (height / 4.5) : (height / 5);
-const smallCardWidth = width / 3.6;
+const smallCardHeight = Platform.OS === 'ios' ? (height / 4.4) : (height / 5);
+const smallCardWidth = Platform.isPad ? (width / 5) : (width / 3.6);
 const title = "Values Experience"
 
 export default function PlayScreen({ navigation }) {
@@ -133,7 +133,7 @@ export default function PlayScreen({ navigation }) {
             setLoading(true)
             let udpdatedDeck = [...deck]
             processRemoveTemp(udpdatedDeck)
-            setTimeout(() => {setLoading(false)}, 100)
+            setTimeout(() => setLoading(false), 100)
         } 
         if (addTemp.length > 0) {
             setLoading(true)
@@ -205,15 +205,12 @@ export default function PlayScreen({ navigation }) {
         const removed = myDeck.splice(myDeck.findIndex(card => card.id === id), 1)[0]
         setValues(myDeck)
 
-        if(removed.custom)
-            processRemoveTemp(deck)
-
         // Check if the card is already in the deck
         if (removeTemp.findIndex(c => c.id === removed.id) !== -1) {
             let temp = [...removeTemp]
             temp.splice(temp.findIndex(c => c.id === removed.id), 1)
             setRemoveTemp(temp)
-        } else 
+        } else
             setAddTemp([...addTemp, removed])
     }
     
@@ -253,7 +250,7 @@ export default function PlayScreen({ navigation }) {
                 }}
                 titleStyle={{ 
                     fontSize: 14, 
-                    fontFamily: font.regular
+                    fontFamily: 'lato'
                 }}
             />
         )
@@ -323,6 +320,7 @@ export default function PlayScreen({ navigation }) {
                                     {deck.map(card =>
                                         <ValueCard
                                             card={card}
+                                            borderRadius={20}
                                             edit={editCustom}
                                             shadowOpacity={0.85}
                                             width={bigCardWidth}
@@ -351,6 +349,7 @@ export default function PlayScreen({ navigation }) {
                                     {deck.map(card =>
                                         <ValueCard
                                             card={card}
+                                            borderRadius={20}
                                             edit={editCustom}
                                             shadowOpacity={0.85}
                                             width={bigCardWidth}
@@ -414,9 +413,9 @@ export default function PlayScreen({ navigation }) {
                                         onSwipedTop={() => removeFromValues(item.id)}
                                         renderNoMoreCards={() => <View style={{ width: 110 }} />}
                                     >
-                                        <Animatable.View duration={500} animation='bounceIn' easing="linear">
-                                            <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0}/>
-                                        </Animatable.View>
+                                        <View duration={500} animation='bounceIn' easing="linear">
+                                            <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
+                                        </View>
                                     </CardStack>
                                 )}
                             />
@@ -504,6 +503,7 @@ const styles = StyleSheet.create({
     },
     myValues: {
         flex: 4,
+        position: 'relative',
         backgroundColor: '#0883BF',
         zIndex: -1
     },
