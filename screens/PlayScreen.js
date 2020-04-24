@@ -130,18 +130,10 @@ export default function PlayScreen({ navigation }) {
         // Lets do it now instead of when the action occurs
         // to make the whole process smoother, less jittery
         if (removeTemp.length > 0) {
-            console.log("BEFORE removeTemp", removeTemp)
-            console.log("BEFORE deck", deck)
-
             setLoading(true)
             let udpdatedDeck = [...deck]
             processRemoveTemp(udpdatedDeck)
-            console.log("udpdatedDeck", udpdatedDeck)
-
-            setTimeout(() => {
-                setLoading(false)
-                console.log("NEW DECK", deck)
-            }, 500)
+            setTimeout(() => {setLoading(false)}, 100)
         } 
         if (addTemp.length > 0) {
             setLoading(true)
