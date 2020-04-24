@@ -130,10 +130,18 @@ export default function PlayScreen({ navigation }) {
         // Lets do it now instead of when the action occurs
         // to make the whole process smoother, less jittery
         if (removeTemp.length > 0) {
+            console.log("BEFORE removeTemp", removeTemp)
+            console.log("BEFORE deck", deck)
+
             setLoading(true)
             let udpdatedDeck = [...deck]
             processRemoveTemp(udpdatedDeck)
-            setTimeout(() => setLoading(false), 100)
+            console.log("udpdatedDeck", udpdatedDeck)
+
+            setTimeout(() => {
+                setLoading(false)
+                console.log("NEW DECK", deck)
+            }, 500)
         } 
         if (addTemp.length > 0) {
             setLoading(true)
@@ -205,12 +213,15 @@ export default function PlayScreen({ navigation }) {
         const removed = myDeck.splice(myDeck.findIndex(card => card.id === id), 1)[0]
         setValues(myDeck)
 
+        if(removed.custom)
+            processRemoveTemp(deck)
+
         // Check if the card is already in the deck
         if (removeTemp.findIndex(c => c.id === removed.id) !== -1) {
             let temp = [...removeTemp]
             temp.splice(temp.findIndex(c => c.id === removed.id), 1)
             setRemoveTemp(temp)
-        } else
+        } else 
             setAddTemp([...addTemp, removed])
     }
     
@@ -250,7 +261,7 @@ export default function PlayScreen({ navigation }) {
                 }}
                 titleStyle={{ 
                     fontSize: 14, 
-                    fontFamily: 'lato'
+                    fontFamily: font.regular
                 }}
             />
         )
@@ -320,7 +331,6 @@ export default function PlayScreen({ navigation }) {
                                     {deck.map(card =>
                                         <ValueCard
                                             card={card}
-                                            borderRadius={20}
                                             edit={editCustom}
                                             shadowOpacity={0.85}
                                             width={bigCardWidth}
@@ -349,7 +359,6 @@ export default function PlayScreen({ navigation }) {
                                     {deck.map(card =>
                                         <ValueCard
                                             card={card}
-                                            borderRadius={20}
                                             edit={editCustom}
                                             shadowOpacity={0.85}
                                             width={bigCardWidth}
@@ -413,9 +422,9 @@ export default function PlayScreen({ navigation }) {
                                         onSwipedTop={() => removeFromValues(item.id)}
                                         renderNoMoreCards={() => <View style={{ width: 110 }} />}
                                     >
-                                        <View duration={500} animation='bounceIn' easing="linear">
-                                            <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
-                                        </View>
+                                        <Animatable.View duration={500} animation='bounceIn' easing="linear">
+                                            <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0}/>
+                                        </Animatable.View>
                                     </CardStack>
                                 )}
                             />
@@ -503,7 +512,6 @@ const styles = StyleSheet.create({
     },
     myValues: {
         flex: 4,
-        position: 'relative',
         backgroundColor: '#0883BF',
         zIndex: -1
     },

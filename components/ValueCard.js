@@ -105,11 +105,11 @@ export default function ValueCard(props) {
         return (
             <CardFlip onFlip={logFlip} style={{ ...styles.cardContainer, height: props.height, width: props.width, shadowOpacity: props.shadowOpacity}} ref={cardRef} flipDirection="x" duration={400} {...props}>
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
-                    <Image source={{ uri: props.card.front }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode={Platform.isPad ? "contain" : "stretch"}/>
+                    <Image source={{ uri: props.card.front }} style={{height: props.height, borderRadius: 10 }}  resizeMode={Platform.isPad ? "contain" : "stretch"}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity activeOpacity={1} onPress={() => cardRef.current.flip()}>
-                    <Image source={{ uri: props.card.back }} style={{height: props.height, borderRadius: props.borderRadius ?? 25}}  resizeMode={Platform.isPad ? "contain" : "stretch"}/>
+                    <Image source={{ uri: props.card.back }} style={{height: props.height, borderRadius: 10 }}  resizeMode={Platform.isPad ? "contain" : "stretch"}/>
                 </TouchableOpacity>
             </CardFlip>
         );
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         shadowOffset: { width: 3, height: 3 },
         shadowColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 15
+        borderRadius: 5
     },
     frontText: {
         padding: 5,
