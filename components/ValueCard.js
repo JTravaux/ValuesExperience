@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions, Image, Platform} from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, Keyboard, View, Dimensions, Image, Platform } from 'react-native';
 import CardFlip from 'react-native-card-flip';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, font } from '../constants/Styles';
@@ -63,9 +63,9 @@ export default function ValueCard(props) {
                                 placeholderTextColor={color}
                                 value={customFront}
                                 placeholder="Custom Value"
-                                onFocus={() => setColor("rgba(255,255,255,0.1)")}
                                 onBlur={handleLogCustom}
                                 onChangeText={text => setCustomFront(text)}
+                                onFocus={() => setColor("rgba(255,255,255,0.1)")}
                                 onSubmitEditing={() => props.edit(props.card.id, 'front', customFront)}
                                 returnKeyType="done"
                             />
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 3, height: 3 },
         backgroundColor: 'transparent',
         shadowColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 15
+        borderRadius: 15,
     },
     customCard: {
         flex: 1,

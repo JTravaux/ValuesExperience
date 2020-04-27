@@ -8,7 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import CardStack from '../components/CardStack';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { StyleSheet, Text, View, ActivityIndicator, Dimensions, Platform } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Dimensions, Platform, KeyboardAvoidingView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import {  Menu, Divider, Provider } from 'react-native-paper';
 import { game_instructions, phases } from '../Instructions';
@@ -125,17 +125,17 @@ export default function PlayScreen({ navigation }) {
         }
     }
 
+    // Check if there's any cards to remove
+    // Lets do it now instead of when the action occurs
+    // to make the whole process smoother, less jittery
     const onSwipeAll = () => {
-        // Check if there's any cards to remove
-        // Lets do it now instead of when the action occurs
-        // to make the whole process smoother, less jittery
         if (removeTemp.length > 0 && addTemp.length > 0) {
             setLoading(true);
             let preUpdatedDeck = [...deck]
             let updatedDeck = processRemoveTemp(preUpdatedDeck, false);
             processAddTemp(updatedDeck)
             setTimeout(() => setLoading(false), 100)
-        } else  if (removeTemp.length > 0) {
+        } else if (removeTemp.length > 0) {
             setLoading(true)
             let udpdatedDeck = [...deck]
             processRemoveTemp(udpdatedDeck)
@@ -284,6 +284,66 @@ export default function PlayScreen({ navigation }) {
         )
     }
 
+    const renderMyValues = () => {
+        return (
+            <>
+                <View style={styles.pileTitle}>
+                    <View style={{ width: myValuesTitleWidth }} />
+                    <Text style={styles.myValuesTitle}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
+
+
+                    <Animatable.View key={`${myValues.length}/${goal.numToKeep}`} animation="tada" onLayout={ev => setMyValuesTitleWidth(ev.nativeEvent.layout.width)}>
+                        {myValues.length !== goal.numToKeep ? renderCurrentCounts() : renderNextButton()}
+                    </Animatable.View>
+
+                </View>
+
+                {/* "My Values" Card Pile */}
+                <View style={{ flex: 1, alignItems: (goal.id === goals.length - 1 || myValues.length === 0) ? 'center' : 'flex-start' }}>
+
+                    {/* Empty Pile */}
+                    {myValues.length === 0 && (
+                        <View style={{ flex: 1, justifyContent: 'center', margin: 10 }}>
+                            <Animatable.Text animation="tada" style={styles.myValuesInstruction}>{goal.shortInstruction}</Animatable.Text>
+                        </View>
+                    )}
+
+                    {/* Non Empty Pile */}
+                    {myValues.length > 0 && (
+                        <FlatList
+                            horizontal
+                            data={myValues}
+                            ref={keepScroller}
+                            showsHorizontalScrollIndicator={false}
+                            style={{ height: smallCardHeight + 10 }}
+                            keyExtractor={item => "my_stack_" + item.id}
+                            scrollEnabled={myValues.length > 3 && scrollEnabled}
+                            onContentSizeChange={() => keepScroller.current.scrollToEnd({ animated: true })}
+                            renderItem={({ item }) => (
+                                <CardStack
+                                    verticalThreshold={50}
+                                    disableLeftSwipe={true}
+                                    horizontalSwipe={false}
+                                    disableRightSwipe={true}
+                                    disableBottomSwipe={true}
+                                    style={styles.myValuesStack}
+                                    onSwipe={() => setScrollEnabled(false)}
+                                    onSwipeEnd={() => setScrollEnabled(true)}
+                                    onSwipedTop={() => removeFromValues(item.id)}
+                                    renderNoMoreCards={() => <View style={{ width: 110 }} />}
+                                >
+                                    <Animatable.View duration={500} animation='bounceIn' easing="linear">
+                                        <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
+                                    </Animatable.View>
+                                </CardStack>
+                            )}
+                        />
+                    )}
+                </View>
+            </>
+        )
+    }
+
     return (
         <Provider>
             <View style={styles.container}>
@@ -379,63 +439,16 @@ export default function PlayScreen({ navigation }) {
                 </View>
 
                 {/* My Values area */}
-                <View style={styles.myValues}>
-                    
-                    <View style={styles.pileTitle}>
-                        <View style={{ width: myValuesTitleWidth}}/>
-                        <Text style={styles.myValuesTitle}>{goal.id === goals.length - 1 ? "Primary Values" : "My Values"}</Text>
-                        
-                      
-                        <Animatable.View key={`${myValues.length}/${goal.numToKeep}`} animation="tada" onLayout={ev => setMyValuesTitleWidth(ev.nativeEvent.layout.width)}>
-                            {myValues.length !== goal.numToKeep ? renderCurrentCounts() : renderNextButton()}
-                        </Animatable.View>
-
-                    </View>
-
-                    {/* "My Values" Card Pile */}
-                    <View style={{ flex: 1, alignItems: (goal.id === goals.length - 1 || myValues.length === 0) ? 'center' : 'flex-start'}}>
-
-                        {/* Empty Pile */}
-                        {myValues.length === 0 && (
-                            <View style={{ flex: 1, justifyContent: 'center', margin: 10}}>
-                                <Animatable.Text animation="tada" style={styles.myValuesInstruction}>{goal.shortInstruction}</Animatable.Text>
-                            </View>
-                        )}
-
-                        {/* Non Empty Pile */}
-                        {myValues.length > 0 && (
-                            <FlatList
-                                horizontal
-                                data={myValues}
-                                ref={keepScroller}
-                                showsHorizontalScrollIndicator={false}
-                                style={{ height: smallCardHeight + 10 }}
-                                keyExtractor={item => "my_stack_" + item.id}
-                                scrollEnabled={myValues.length > 3 && scrollEnabled}
-                                onContentSizeChange={() => keepScroller.current.scrollToEnd({ animated: true })}
-                                renderItem={({ item }) => (
-                                    <CardStack
-                                        verticalThreshold={50}
-                                        disableLeftSwipe={true}
-                                        horizontalSwipe={false}
-                                        disableRightSwipe={true}
-                                        disableBottomSwipe={true}
-                                        style={styles.myValuesStack}
-                                        onSwipe={() => setScrollEnabled(false)}
-                                        onSwipeEnd={() => setScrollEnabled(true)}
-                                        onSwipedTop={() => removeFromValues(item.id)}
-                                        renderNoMoreCards={() => <View style={{ width: 110 }} />}
-                                    >
-                                        <Animatable.View duration={500} animation='bounceIn' easing="linear">
-                                            <ValueCard width={smallCardWidth} height={smallCardHeight} card={item} shadowOpacity={0} borderRadius={20} />
-                                        </Animatable.View>
-                                    </CardStack>
-                                )}
-                            />
-                        )}
-                    </View>
-                </View>
-
+                {Platform.OS === "ios" ? 
+                    <View style={styles.myValues}>
+                        {renderMyValues()}
+                    </View> 
+                : 
+                    <KeyboardAvoidingView style={styles.myValues} behavior="height">
+                        {renderMyValues()}
+                    </KeyboardAvoidingView>
+                }
+               
                 <SlideOverlay title={goal.title} visible={goalModalOpen} instructions={goal.instructions} close={() => setGoalModalOpen(false)} goal={true} />
                 <SlideOverlay title="Instructions" visible={insModalOpen} instructions={game_instructions} close={() => setInsModalOpen(false)}/>
 
@@ -516,9 +529,8 @@ const styles = StyleSheet.create({
     },
     myValues: {
         flex: 4,
-        position: 'relative',
         backgroundColor: '#0883BF',
-        zIndex: -1
+        zIndex: -1,
     },
     scrollBtnContainer: {
         flex: 1, 
