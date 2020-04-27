@@ -39,9 +39,14 @@ export default function ValueCard(props) {
 
     const logFlip = () => {
         Amplitude.logEventWithProperties("Card Flipped", {   
-            card: props.card.custom ? props.card.front : props.card.name, 
+            card: props.card.custom ? customFront : props.card.name, 
             location: props.height === bigHeightThresh ? "Main Deck" : (props.height === 225 ? "No Deck - Reflection" : "My Values Deck") 
         })
+    }
+
+    const handleLogCustom = () => {
+        setColor(colors.fontColor)
+        Amplitude.logEventWithProperties("Custom Card Interaction", { name: customFront })
     }
 
     if (props.card.custom) 
@@ -59,7 +64,7 @@ export default function ValueCard(props) {
                                 value={customFront}
                                 placeholder="Custom Value"
                                 onFocus={() => setColor("rgba(255,255,255,0.1)")}
-                                onBlur={() => setColor(colors.fontColor)}
+                                onBlur={handleLogCustom}
                                 onChangeText={text => setCustomFront(text)}
                                 onSubmitEditing={() => props.edit(props.card.id, 'front', customFront)}
                                 returnKeyType="done"

@@ -11,7 +11,7 @@ import * as Animatable from 'react-native-animatable';
 import { Input, CheckBox, Button  } from 'react-native-elements';
 import Modal, {ModalContent, SlideAnimation } from 'react-native-modals';
 
-export default function EndScreen({ route: { params } }) {
+export default function EndScreen({ route, navigation }) {
     const insets = useSafeArea();
 
     const [rating, setRating] = React.useState(-1)
@@ -20,7 +20,7 @@ export default function EndScreen({ route: { params } }) {
     const [moreToSayTitle, setMoreToSayTitle] = React.useState("Have more to say?")
     const [feedback, setFeedback] = React.useState("")
     const [email, setEmail] = React.useState("")
-    const [errMsg, setErrMsg] = React.useState("Test")
+    const [errMsg, setErrMsg] = React.useState("")
     const [moreToSay, setMoreToSay] = React.useState(false)
     const [moreToSayDone, setMoreToSayDone] = React.useState(false)
     const [animate, setAnimate] = React.useState(true)
@@ -54,7 +54,6 @@ export default function EndScreen({ route: { params } }) {
                     <Text style={props.value === rating ? styles.emoji_on : (rating === -1 ? styles.emoji_on : styles.emoji_off)}>{props.emoji}</Text>
                 </TouchableOpacity>
             </Animatable.View>
-          
         )
     }
 
@@ -101,14 +100,17 @@ export default function EndScreen({ route: { params } }) {
                         <Text style={styles.titleStyle}>Action</Text>
                     </View>
 
-                    <View style={{flex: 1.5}}>
+                    <View style={{flex: 1.5, justifyContent: 'space-between'}}>
                         <Text style={styles.textStyle}>
                             What do I need to do today to ensure alignment of my values of
-                        <Text style={{ fontFamily: font.bold }}>{` ${params.chosenOnes[0]} `}</Text>and
-                        <Text style={{ fontFamily: font.bold }}>{` ${params.chosenOnes[1]}`}</Text>?
-                    </Text>
+                            <Text style={{ fontFamily: font.bold }}>{` ${route.params.chosenOnes[0]} `}</Text>and
+                            <Text style={{ fontFamily: font.bold }}>{` ${route.params.chosenOnes[1]}`}</Text>?
+                        </Text>
+                   
+                        <TouchableOpacity activeOpacity={0.3} onPress={() => navigation.navigate('purpose')}>
+                            <Text style={styles.textStyleSM}>Restart Experience</Text>
+                        </TouchableOpacity>
                     </View>
-                
                 </View>
 
                 {/* Feedback */}
@@ -275,6 +277,14 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: colors.fontColor,
         textAlign: 'center'
+    },
+    textStyleSM: {
+        fontFamily: font.light,
+        fontSize: 15,
+        color: colors.fontColor,
+        textAlign: 'center',
+        margin: 20,
+        textDecorationLine: 'underline'
     },
     gradient: {
         flex: 1,

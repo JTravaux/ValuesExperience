@@ -129,13 +129,18 @@ export default function PlayScreen({ navigation }) {
         // Check if there's any cards to remove
         // Lets do it now instead of when the action occurs
         // to make the whole process smoother, less jittery
-        if (removeTemp.length > 0) {
+        if (removeTemp.length > 0 && addTemp.length > 0) {
+            setLoading(true);
+            let preUpdatedDeck = [...deck]
+            let updatedDeck = processRemoveTemp(preUpdatedDeck, false);
+            processAddTemp(updatedDeck)
+            setTimeout(() => setLoading(false), 100)
+        } else  if (removeTemp.length > 0) {
             setLoading(true)
             let udpdatedDeck = [...deck]
             processRemoveTemp(udpdatedDeck)
             setTimeout(() => setLoading(false), 100)
-        } 
-        if (addTemp.length > 0) {
+        } else if (addTemp.length > 0) {
             setLoading(true)
             let udpdatedDeck = [...deck]
             processAddTemp(udpdatedDeck)
@@ -143,22 +148,27 @@ export default function PlayScreen({ navigation }) {
         } 
     }
 
-    const processAddTemp = arr => {
+    const processAddTemp = (arr, replaceState=true) => {
         for (let i = 0; i < addTemp.length; ++i)
             arr.unshift(addTemp[i])
-        setDeck(arr)
+            
         setAddTemp([])
+        if (replaceState)
+            setDeck(arr)   
+        else return arr;
     }
 
-    const processRemoveTemp = arr => {
+    const processRemoveTemp = (arr, replaceState=true) => {
         for(let i = 0; i < removeTemp.length; ++i)
             if (removeTemp[i].custom)
                 arr.splice(arr.findIndex(card => card.id === removeTemp[i].id), 1, newCustomValue())
             else
                 arr.splice(arr.findIndex(card => card.id === removeTemp[i].id), 1)
 
-        setDeck(arr)
         setRemoveTemp([])
+        if (replaceState)
+            setDeck(arr)
+        else return arr;
     }
 
     const addToMyValues = idx => {
