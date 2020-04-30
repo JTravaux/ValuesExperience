@@ -6,7 +6,9 @@ import { colors, font } from '../constants/Styles';
 import { Input } from 'react-native-elements';
 import * as Amplitude from 'expo-analytics-amplitude';
 
-const bigHeightThresh = Dimensions.get('screen').height / 2;
+const bigHeightThresh = Platform.OS === "ios" ? 
+                        Dimensions.get('screen').height / 2 : 
+                        Dimensions.get('screen').height / 2.35;
 
 export default function ValueCard(props) {
     const cardRef = React.useRef();

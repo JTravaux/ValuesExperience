@@ -16,7 +16,7 @@ import * as Amplitude from 'expo-analytics-amplitude';
 import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('screen');
-const bigCardHeight = height / 2;
+const bigCardHeight = Platform.OS === "ios" ? height / 2 : height / 2.35;
 const bigCardWidth = Platform.isPad ? (width / 2.2) : (width / 1.5);
 
 const smallCardHeight = Platform.OS === 'ios' ? (height / 4.4) : (height / 5);
@@ -422,7 +422,6 @@ export default function PlayScreen({ navigation }) {
                                     {deck.map(card =>
                                         <ValueCard
                                             card={card}
-                                            borderRadius={20}
                                             edit={editCustom}
                                             shadowOpacity={0.85}
                                             width={bigCardWidth}
