@@ -7,7 +7,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
 // For development only, will be moved eventually
-const VERSION = "Alpha: 0.0.11";
+const VERSION = "Beta: 0.1.0";
 
 const backgroundText = [
   "Values motivate and guide us to behave at our best.",
