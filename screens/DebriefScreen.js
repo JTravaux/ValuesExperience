@@ -9,8 +9,8 @@ import Multisetp from '../components/MultiStep'
 import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
-const cardHeight = Dimensions.get('screen').height / 3.5;
-const cardWidth = Dimensions.get('screen').width / 2.75;
+const cardHeight = Dimensions.get('screen').height / 3;
+const cardWidth = Dimensions.get('screen').width / 3;
 
 export default function DebriefScreen({ navigation, route }) {
   const insets = useSafeArea();
