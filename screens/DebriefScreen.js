@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView, Dimensions, Platform} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ValueCard from '../components/ValueCard';
 import { colors, font } from '../constants/Styles';
@@ -9,8 +9,8 @@ import Multisetp from '../components/MultiStep'
 import { useSafeArea } from 'react-native-safe-area-context';
 import * as Amplitude from 'expo-analytics-amplitude';
 
-const cardHeight = Dimensions.get('screen').height / 3;
-const cardWidth = Dimensions.get('screen').width / 3;
+const cardHeight = Platform.isPad ? (Dimensions.get('screen').height / 3) : (Dimensions.get('screen').height / 3.5);
+const cardWidth = Platform.isPad ? (Dimensions.get('screen').width / 3) : (Dimensions.get('screen').height / 5);
 
 export default function DebriefScreen({ navigation, route }) {
   const insets = useSafeArea();

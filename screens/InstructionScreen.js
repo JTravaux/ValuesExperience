@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { game_instructions } from '../Instructions';
 import * as Amplitude from 'expo-analytics-amplitude';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function InstructionScreen({ navigation: { navigate } }) {
@@ -24,13 +25,16 @@ export default function InstructionScreen({ navigation: { navigate } }) {
                         <Text style={{ ...styles.instruction, ...styles.titleStyle, textAlign: 'center' }}>Instructions</Text>
 
                         <Text style={styles.instruction}>The Values Experience is a guided tour to help you identify the values you hold most dear.</Text>
-                        <FlatList
-                            scrollEnabled={false}
-                            style={{ marginTop: 20 }}
-                            data={game_instructions}
-                            renderItem={({ item }) => <Text style={styles.instructionPoint}>{item}</Text>}
-                            keyExtractor={(item, idx) => "instruction_" + idx}
-                        />
+                        
+                        <ScrollView style={{flex: 1}}>
+                            <FlatList
+                                scrollEnabled={false}
+                                style={{ marginTop: 20 }}
+                                data={game_instructions}
+                                renderItem={({ item }) => <Text style={styles.instructionPoint}>{item}</Text>}
+                                keyExtractor={(item, idx) => "instruction_" + idx}
+                            />
+                        </ScrollView>
                     </View>
 
                     <View style={styles.bottomBtns}>

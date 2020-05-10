@@ -24,7 +24,6 @@ const smallCardWidth = Platform.isPad ? (width / 5) : (width / 3.6);
 const title = "Values Experience"
 
 export default function PlayScreen({ navigation }) {
-    
     const insets = useSafeArea();
     const keepScroller = React.useRef(); // used to scroll the scrollviewer programatically
 
@@ -496,7 +495,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     title: {
-        flex: 1/2,
+        flex: Dimensions.get('screen').width < 350 ? 1/1.5 : 1/2,
         alignItems: 'center',
         flexDirection: 'row',
         padding: 10,
@@ -506,7 +505,7 @@ const styles = StyleSheet.create({
         color: colors.fontColor,
         textAlign: 'center',
         fontFamily: font.semibold,
-        fontSize: 35,
+        fontSize: Dimensions.get('screen').width < 350 ? 30 : 35,
         textAlignVertical: 'center'
     },
     pileTitle: {
